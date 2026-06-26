@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/jpeg" sizes="32x32" href="static/images/logos/iiith_logo.jpg">
+  <link rel="shortcut icon" href="static/images/logos/iiith_logo.jpg">
+  <link rel="apple-touch-icon" sizes="180x180" href="static/images/logos/iiith_logo.jpg">
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DocLayout-VL: A Foundational Model for Hierarchical, Open-Set and Promptable Document Layout Segmentation</title>
+  <meta name="description" content="DocLayout-VL: a foundational model for hierarchical, open-set and promptable document layout segmentation." />
+  <meta property="og:title" content="DocLayout-VL" />
+  <meta property="og:description" content="A foundational model for hierarchical, open-set and promptable document layout segmentation." />
+  <meta property="og:type" content="website" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,wght@0,400;0,700;1,400&family=Noto+Sans:ital,wght@0,400;0,700;1,400&display=swap"
+    rel="stylesheet">
+
+  <style>
+    body { font-family: 'Noto Sans', sans-serif; color: #363636; }
+    .title, h1, h2, h3, h4 { font-family: 'Google Sans', 'Noto Sans', sans-serif; }
+    .navbar { border-bottom: 1px solid #f0f0f0; }
+    .publication-header { background: #fff; }
+    .publication-title { font-size: 2.25rem !important; font-weight: 700; line-height: 1.22; }
+    .publication-subtitle { color: #555; font-size: 1.15rem; margin-top: 0.5rem; }
+    .hero-pitch {
+      max-width: 850px; margin: 1rem auto 0; color: #4a4a4a;
+      font-size: 1.05rem; line-height: 1.75;
+    }
+    .publication-venue {
+      font-size: 1.15rem; font-weight: 700; color: #D8552B;
+      margin-bottom: 0.5rem; letter-spacing: 0.03em;
+    }
+    .author-block a { color: #363636; text-decoration: none; border-bottom: 1px dotted #aaa; }
+    .author-block a:hover { color: #D8552B; border-color: #D8552B; }
+    .section-alt { background: #fafafa; }
+    .teaser { padding: 1rem 1.5rem 2.5rem; }
+    .figure-panel {
+      width: 100%; height: auto; display: block; border: 1px solid #e1e1e1;
+      border-radius: 8px; background: #fff; box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+    .fig-caption {
+      text-align: center; font-size: 0.9rem; color: #555;
+      margin-top: 0.75rem; line-height: 1.65;
+    }
+    .fig-caption strong { color: #333; }
+    #abstract .content { font-size: 1rem; line-height: 1.8; }
+    .stat-box {
+      text-align: center; background: #fff; border: 1px solid #e4e4e4;
+      border-radius: 10px; padding: 1.1rem 0.75rem; height: 100%;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .stat-box .stat-num {
+      font-size: 1.85rem; font-weight: 700; color: #D8552B;
+      font-family: 'Google Sans', sans-serif; line-height: 1.15;
+    }
+    .stat-box .stat-lbl { font-size: 0.78rem; color: #777; margin-top: 0.35rem; line-height: 1.4; }
+    .method-card {
+      border: 1.5px solid #e8e8e8; border-radius: 10px; padding: 1.5rem;
+      background: #fff; height: 100%;
+    }
+    .method-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: 0.6rem; }
+    .method-card p { font-size: 0.9rem; color: #555; line-height: 1.7; }
+    .result-table thead { background: #14223E; }
+    .result-table thead th { color: white; }
+    .result-table tr.ours td { font-weight: 700; color: #D8552B; background: #fdf3ef; }
+    .result-table th, .result-table td { text-align: center !important; vertical-align: middle !important; }
+    .result-table th:first-child, .result-table td:first-child { text-align: left !important; }
+    .result-table { font-size: 0.78rem; }
+    .result-table .group { font-weight: 700; color: #555; background: #f7f7f7; }
+    .table-caption {
+      color: #555; font-size: 0.9rem; line-height: 1.65;
+      margin: 0.5rem auto 1rem; max-width: 980px;
+    }
+    .result-note { color: #666; font-size: 0.92rem; line-height: 1.7; }
+    .idea-strip {
+      background: #14223E; color: #fff; border-radius: 10px; padding: 1.25rem 1.5rem;
+      margin-top: 1.75rem; line-height: 1.7;
+    }
+    .idea-strip strong { color: #fff; }
+    .coming-soon {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      background: #fff3cd; border: 1px solid #ffc107; color: #856404;
+      font-size: 0.72rem; font-weight: 600; padding: 0.15rem 0.5rem;
+      border-radius: 4px; letter-spacing: 0.03em; text-transform: uppercase;
+      vertical-align: middle; margin-left: 4px;
+    }
+    .institution-logos {
+      display: flex; align-items: center; justify-content: center; gap: 3rem;
+      flex-wrap: wrap; margin-top: 2rem; padding: 1.25rem 1.5rem;
+      background: #fdf8f6; border: 1px solid #f0ddd6; border-radius: 12px;
+    }
+    .institution-logos a {
+      display: inline-flex; align-items: center; opacity: 0.9;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .institution-logos a:hover { opacity: 1; transform: scale(1.05); }
+    .institution-logos img { height: 72px; width: auto; object-fit: contain; }
+    .footer-logos {
+      display: flex; align-items: center; justify-content: center; gap: 2rem;
+      flex-wrap: wrap; margin-bottom: 1.25rem;
+    }
+    .footer-logos a { display: inline-flex; align-items: center; opacity: 0.7; transition: opacity 0.2s ease; }
+    .footer-logos a:hover { opacity: 1; }
+    .footer-logos img { height: 36px; width: auto; object-fit: contain; }
+    footer.footer { background: #fafafa; border-top: 1px solid #f0f0f0; }
+    footer .content { font-size: 0.87rem; color: #777; }
+    .accent { color: #D8552B; }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; margin-top: 1rem; }
+    @media (max-width: 768px) {
+      .publication-title { font-size: 1.55rem !important; }
+      .publication-subtitle { font-size: 1rem; }
+      .institution-logos { gap: 1.75rem; padding: 1rem; }
+      .institution-logos img { height: 52px; }
+    }
+  </style>
+</head>
+
+<body>
+<nav class="navbar is-light" role="navigation" aria-label="main navigation">
+  <div class="container">
+    <div class="navbar-brand">
+      <a class="navbar-item has-text-weight-semibold" href="#">DocLayout-VL</a>
+      <a role="button" class="navbar-burger" data-target="navMenu" aria-label="menu">
+        <span></span><span></span><span></span>
+      </a>
+    </div>
+    <div id="navMenu" class="navbar-menu">
+      <div class="navbar-start" style="flex-grow:1;justify-content:center;">
+        <a class="navbar-item" href="#abstract">Abstract</a>
+        <a class="navbar-item" href="#tasks">Tasks</a>
+        <a class="navbar-item" href="#method">Method</a>
+        <a class="navbar-item" href="#dataset">Dataset</a>
+        <a class="navbar-item" href="#results">Results</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<section class="hero publication-header">
+  <div class="hero-body">
+    <div class="container is-max-widescreen">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <p class="publication-venue">ECCV 2026</p>
+          <h1 class="title is-2 publication-title">
+            DocLayout-VL: A Foundational Model for Hierarchical,<br>
+            Open-Set and Promptable Document Layout Segmentation
+          </h1>
+          <p class="hero-pitch">
+            Layout analysis is still boxed into fixed labels and rectangles. DocLayout-VL reimagines it as a
+            foundation-model problem: open-vocabulary layout parsing, tree-structured document understanding,
+            pixel-accurate masks, and prompt-driven control in one model.
+          </p>
+
+          <div class="is-size-5 publication-authors" style="margin-top:1.25rem; line-height:2;">
+            <span class="author-block">
+              <a href="https://orcid.org/0009-0000-1327-4607" target="_blank" rel="noopener noreferrer">Venkata Kesav Venna</a><sup>1,*</sup>,&ensp;
+            </span>
+            <span class="author-block">
+              <a href="https://orcid.org/0009-0009-8266-5690" target="_blank" rel="noopener noreferrer">Srihari Bandarupalli</a><sup>2,*</sup>,&ensp;
+            </span>
+            <span class="author-block">
+              <a href="https://orcid.org/0009-0008-1444-0222" target="_blank" rel="noopener noreferrer">Anirudh Srinivasan</a><sup>1,*</sup>,&ensp;
+            </span>
+            <span class="author-block">
+              <a href="https://orcid.org/0009-0002-6321-1051" target="_blank" rel="noopener noreferrer">Raghuveer R</a><sup>1</sup>,&ensp;
+            </span>
+            <span class="author-block">
+              <a href="https://orcid.org/0009-0003-7226-3635" target="_blank" rel="noopener noreferrer">Sai Madhusudan Gunda</a><sup>2</sup>,&ensp;
+            </span>
+            <span class="author-block">
+              <a href="https://orcid.org/0000-0003-4134-1154" target="_blank" rel="noopener noreferrer">Ravi Kiran Sarvadevabhatla</a><sup>1,2</sup>
+            </span>
+          </div>
+
+          <div style="margin-top:0.75rem; font-size:1rem; line-height:1.6;">
+            <div style="font-weight:600;">
+              <sup>1</sup> BharatGen &nbsp;&nbsp;&nbsp;
+              <sup>2</sup> IIIT Hyderabad
+            </div>
+            <div style="font-size:0.9rem; color:#666;">
+              <sup>*</sup> Equal contribution
+            </div>
+          </div>
+
+          <div style="margin-top:1.75rem;">
+            <span class="button is-dark is-rounded is-outlined" style="margin:0.2rem; opacity:0.65; cursor:default;" title="Coming soon">
+              <span class="icon"><i class="fab fa-github"></i></span>
+              <span>Code <span class="coming-soon">Soon</span></span>
+            </span>
+            <span class="button is-dark is-rounded is-outlined" style="margin:0.2rem; opacity:0.65; cursor:default;" title="Coming soon">
+              <span class="icon"><i class="fas fa-database"></i></span>
+              <span>Dataset <span class="coming-soon">Soon</span></span>
+            </span>
+          </div>
+
+          <div class="institution-logos">
+            <a href="https://eccv.ecva.net/" target="_blank" rel="noopener noreferrer" title="ECCV 2026">
+              <img src="static/images/logos/eccv_logo.png" alt="ECCV logo" />
+            </a>
+            <a href="https://bharatgen.com/" target="_blank" rel="noopener noreferrer" title="BharatGen">
+              <img src="static/images/logos/bharatgen_logo.png" alt="BharatGen logo" />
+            </a>
+            <a href="https://www.iiit.ac.in/" target="_blank" rel="noopener noreferrer" title="IIIT Hyderabad">
+              <img src="static/images/logos/iiith_logo.jpg" alt="IIIT Hyderabad logo" />
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="teaser">
+  <div class="container is-max-desktop">
+    <img class="figure-panel" src="static/images/doclayoutvl_teaser.png" alt="DocLayout-VL teaser figure">
+    <p class="fig-caption">
+      <strong>DocLayout-VL teaser.</strong>
+      Instead of treating layout as a flat detection problem, DocLayout-VL turns each page into a controllable
+      structured parse: semantic nodes, hierarchy, masks, and prompt-conditioned explanations.
+    </p>
+  </div>
+</div>
+
+<section class="section" id="abstract">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Reimagining Document Layout Understanding</h2>
+        <div class="content has-text-justified">
+          <p>
+            Document layout understanding has been stuck in a pre-foundation-model era: fixed ontologies,
+            non-hierarchical labels, and axis-aligned boxes. That abstraction breaks exactly where real documents
+            become useful: irregular regions, nested sections, domain-specific labels, curved text, and interactive
+            user intent.
+          </p>
+          <p>
+            <strong>DocLayout-VL</strong> resets the formulation. It treats layout as contextualized, hierarchical,
+            open-set, and promptable segmentation. For a page, the model predicts a coherent layout tree, assigns
+            open-vocabulary semantic labels, grounds every node with a pixel-accurate mask, and can adapt the parse
+            at inference time through natural language prompts.
+          </p>
+          <p>
+            At the center is the <em>Hierarchical Grounding Contextualizer</em>, which uses tree-aware attention over
+            parent, child, and sibling relationships before mask decoding. Trained on <strong>HOPLay-Docs-80M</strong>
+            and evaluated on <strong>HOPLay-Docs-Bench</strong>, DocLayout-VL moves layout understanding from static
+            preprocessing to a controllable, semantically grounded interface for document intelligence.
+          </p>
+        </div>
+        <div class="idea-strip">
+          <strong>Core idea:</strong> if LLM-era document systems need layout as a reasoning substrate, then layout
+          parsing cannot remain a fixed-schema box detector. It needs to be open-set, hierarchical, mask-grounded,
+          and promptable.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt" id="tasks">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Foundational Layout Capabilities</h2>
+    <img class="figure-panel" src="static/images/doclayoutvl_tasks.png" alt="DocLayout-VL task diagram">
+    <p class="fig-caption">
+      <strong>Task formulation.</strong>
+      Agentic document workflows need more than OCR and rectangles. They need a page representation that can be
+      queried, revised, grounded, and composed across downstream reasoning steps.
+    </p>
+
+    <div class="columns is-multiline" style="margin-top:2rem;">
+      <div class="column is-half">
+        <div class="method-card">
+          <h4><i class="fas fa-crop-simple accent"></i>&ensp;Layout as Segmentation</h4>
+          <p>
+            Agents cannot reliably operate on coarse bounding boxes when documents contain curved text, overlapping
+            regions, dense tables, or irregular graphics. Pixel-accurate masks give every extracted region a precise
+            visual footprint, making redaction, retrieval chunking, citation, and verification spatially trustworthy.
+          </p>
+        </div>
+      </div>
+      <div class="column is-half">
+        <div class="method-card">
+          <h4><i class="fas fa-tags accent"></i>&ensp;Open-Set Layout Labels</h4>
+          <p>
+            Real workflows do not share one universal ontology. A financial report, medical form, slide deck, and
+            government circular all demand different concepts. Open-set labeling lets the model infer domain-specific
+            layout semantics instead of forcing every page into a small closed taxonomy.
+          </p>
+        </div>
+      </div>
+      <div class="column is-half">
+        <div class="method-card">
+          <h4><i class="fas fa-sitemap accent"></i>&ensp;Hierarchical Structure</h4>
+          <p>
+            Document meaning is nested: sections contain headings, tables contain cells, forms contain fields, and
+            panels contain subregions. A layout tree exposes these parent-child-sibling relations so agents can reason
+            over context, reading order, containment, and multi-step extraction plans.
+          </p>
+        </div>
+      </div>
+      <div class="column is-half">
+        <div class="method-card">
+          <h4><i class="fas fa-wand-magic-sparkles accent"></i>&ensp;Promptable Control</h4>
+          <p>
+            Agentic systems need to ask for exactly the layout they need: redact only PII, extract all invoice fields,
+            isolate figure captions, or focus on a spatial region. Promptable layout understanding turns parsing into
+            an interactive interface rather than a one-shot preprocessing artifact.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="idea-strip">
+      Together, these four capabilities make layout a reusable reasoning substrate: open vocabulary for new domains,
+      hierarchy for structure, masks for evidence, and prompts for control.
+    </div>
+
+    <div class="tag-row">
+      <span class="tag is-light">Agentic Document Workflows</span>
+      <span class="tag is-light">Mask-Grounded Parsing</span>
+      <span class="tag is-light">Open-Vocabulary Layout</span>
+      <span class="tag is-light">Hierarchical Segmentation</span>
+      <span class="tag is-light">Promptable Control</span>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="method">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Method</h2>
+    <img class="figure-panel" src="static/images/doclayoutvl_arch.png" alt="DocLayout-VL architecture diagram">
+    <p class="fig-caption">
+      <strong>DocLayout-VL architecture.</strong>
+      A vision-language model generates a serialized XML layout tree with special <code>[LAY]</code> tokens. The
+      Hierarchical Grounding Contextualizer refines those tokens using tree-aware attention, and a segmentation
+      module decodes pixel-accurate masks for each layout region.
+    </p>
+
+    <div class="columns" style="margin-top:2.5rem;">
+      <div class="column">
+        <div class="method-card">
+          <h4><i class="fas fa-layer-group accent"></i>&ensp;Layout Tree Generation</h4>
+          <p>
+            The VLM autoregressively produces a semantic XML-style layout tree, creating an editable structured parse
+            rather than a flat list of detections.
+          </p>
+        </div>
+      </div>
+      <div class="column">
+        <div class="method-card">
+          <h4><i class="fas fa-network-wired accent"></i>&ensp;Hierarchical Grounding Contextualizer</h4>
+          <p>
+            HGC refines <code>[LAY]</code> token embeddings with tree-aware attention over parent, child, and sibling
+            relations, enforcing structural locality before mask prediction.
+          </p>
+        </div>
+      </div>
+      <div class="column">
+        <div class="method-card">
+          <h4><i class="fas fa-location-crosshairs accent"></i>&ensp;Mask-Level Grounding</h4>
+          <p>
+            A segmentation module converts the contextualized layout tokens into masks, grounding every semantic node
+            in precise page evidence.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt" id="dataset">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">HOPLay-Docs-80M Dataset &amp; Benchmark</h2>
+    <p class="has-text-centered result-note" style="margin-bottom:2rem;">
+      HOPLay-Docs-80M supports foundation-scale learning for flat, hierarchical, and prompt-conditioned layout
+      segmentation. HOPLay-Docs-Bench is a human-verified suite for evaluating open-set, hierarchical, curved, and
+      promptable layout understanding.
+    </p>
+
+    <div class="columns is-centered">
+      <div class="column is-2"><div class="stat-box"><div class="stat-num">2.5M</div><div class="stat-lbl">Pages</div></div></div>
+      <div class="column is-2"><div class="stat-box"><div class="stat-num">80M</div><div class="stat-lbl">Pixel Masks</div></div></div>
+      <div class="column is-2"><div class="stat-box"><div class="stat-num">5M</div><div class="stat-lbl">Promptable Annotations</div></div></div>
+      <div class="column is-2"><div class="stat-box"><div class="stat-num">400K</div><div class="stat-lbl">Open-Set Labels</div></div></div>
+      <div class="column is-2"><div class="stat-box"><div class="stat-num">58</div><div class="stat-lbl">Document Types</div></div></div>
+    </div>
+
+    <div class="columns" style="margin-top:1.5rem;">
+      <div class="column">
+        <div class="method-card">
+          <h4>FlatLay-Docs-25M</h4>
+          <p>Open-set flat layout grounding with 25M regions and 250K unique labels.</p>
+        </div>
+      </div>
+      <div class="column">
+        <div class="method-card">
+          <h4>HierLay-Docs-40M</h4>
+          <p>Nested layout structure learning with 40M regions and hierarchy-aware supervision.</p>
+        </div>
+      </div>
+      <div class="column">
+        <div class="method-card">
+          <h4>PromptLay-Docs-15M</h4>
+          <p>Instruction data for prompt-conditioned extraction, with 15M regions and 5M annotations.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tag-row">
+      <span class="tag is-info is-light">FlatLay-Docs-Bench</span>
+      <span class="tag is-info is-light">HierLay-Docs-Bench</span>
+      <span class="tag is-info is-light">CurveLay-Docs-Bench</span>
+      <span class="tag is-info is-light">PromptLay-Docs-Bench</span>
+      <span class="tag is-info is-light">10 Tasks</span>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="results">
+  <div class="container is-max-widescreen">
+    <h2 class="title is-3 has-text-centered">Results</h2>
+    <p class="has-text-centered result-note" style="margin-bottom:2rem;">
+      The core result is not just a better score. It is a failure mode exposed: large VLMs can describe documents, but
+      they do not reliably produce structured, pixel-grounded layout parses. DocLayout-VL closes that gap by combining
+      open-set semantics, hierarchy, and mask grounding.
+    </p>
+
+    <div class="columns is-centered" style="margin-bottom:2rem;">
+      <div class="column is-2"><div class="stat-box"><div class="stat-num">79.4</div><div class="stat-lbl">Overall Score<br>DocLayout-VL-8B-it</div></div></div>
+      <div class="column is-2"><div class="stat-box"><div class="stat-num">86.7</div><div class="stat-lbl">Open mIoU<br>Flat Benchmark</div></div></div>
+      <div class="column is-2"><div class="stat-box"><div class="stat-num">77.5</div><div class="stat-lbl">Open mIoU<br>Hierarchical Benchmark</div></div></div>
+      <div class="column is-2"><div class="stat-box"><div class="stat-num">87.9</div><div class="stat-lbl">Open mIoU<br>Curved Benchmark</div></div></div>
+      <div class="column is-2"><div class="stat-box"><div class="stat-num">87.2</div><div class="stat-lbl">GE<br>Promptable Benchmark</div></div></div>
+    </div>
+
+    <h3 class="title is-4 has-text-centered">Open-Set, Hierarchical, Curved, and Promptable Layout Understanding</h3>
+    <p class="table-caption has-text-centered">
+      <strong>Benchmarks:</strong> FB = FlatLay-Docs-Bench, HB = HierLay-Docs-Bench, CB = CurveLay-Docs-Bench,
+      PB = PromptLay-Docs-Bench. <strong>Metrics:</strong> Om = Open mIoU, OR = Open RQ, OA = Open AP,
+      mST = mean Semantic TEDS, mhF = mean thresholded hF1, cI = cumulative IoU, GE = g-eval,
+      OS = Overall Score, OS<sub>en</sub> = Overall Score English.
+    </p>
+    <div class="table-container">
+      <table class="table is-striped is-hoverable is-fullwidth result-table">
+        <thead>
+          <tr>
+            <th rowspan="2">Type</th>
+            <th rowspan="2">Model</th>
+            <th colspan="3">FB</th>
+            <th colspan="3">HB</th>
+            <th>CB</th>
+            <th colspan="2">PB</th>
+            <th colspan="2">Overall</th>
+          </tr>
+          <tr>
+            <th>Om</th><th>OR</th><th>OA</th>
+            <th>Om</th><th>mST</th><th>mhF</th>
+            <th>Om</th>
+            <th>cI</th><th>GE</th>
+            <th>OS</th><th>OS<sub>en</sub></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td rowspan="7" class="group">Small Open Source VLMs</td>
+            <td>Qwen3-VL-8B-it</td><td>63.9</td><td>24.3</td><td>5.8</td><td>18.6</td><td>12.7</td><td>20.6</td><td>36.0</td><td>20.7</td><td>62.7</td><td>31.6</td><td>35.4</td>
+          </tr>
+          <tr><td>InternVL3.5-8B</td><td>60.1</td><td>14.7</td><td>2.4</td><td>16.1</td><td>11.3</td><td>19.9</td><td>32.8</td><td>14.6</td><td>57.1</td><td>27.5</td><td>29.1</td></tr>
+          <tr><td>Gemma3-12B</td><td>51.7</td><td>2.1</td><td>0.1</td><td>6.5</td><td>12.8</td><td>17.5</td><td>29.3</td><td>3.5</td><td>54.2</td><td>22.1</td><td>23.8</td></tr>
+          <tr><td>Florence 2</td><td>8.4</td><td>0.8</td><td>0.1</td><td>4.7</td><td>11.9</td><td>14.7</td><td>4.3</td><td>3.9</td><td>42.6</td><td>10.3</td><td>11.0</td></tr>
+          <tr><td>LLaVa 1.6</td><td>10.3</td><td>1.2</td><td>0.1</td><td>3.3</td><td>9.5</td><td>16.4</td><td>5.2</td><td>2.6</td><td>40.1</td><td>10.0</td><td>10.5</td></tr>
+          <tr><td>mPLUG-DocOwl 2</td><td>19.7</td><td>1.8</td><td>0.4</td><td>2.8</td><td>8.0</td><td>15.1</td><td>10.3</td><td>4.2</td><td>46.1</td><td>12.8</td><td>13.1</td></tr>
+          <tr><td>Chandra</td><td>59.6</td><td>10.4</td><td>1.7</td><td>0.7</td><td>10.7</td><td>18.7</td><td>30.9</td><td>0.5</td><td>30.8</td><td>20.1</td><td>24.9</td></tr>
+          <tr>
+            <td rowspan="3" class="group">Large Open Source VLMs</td>
+            <td>Qwen3-VL-235B-it</td><td>61.3</td><td>17.1</td><td>3.1</td><td>20.0</td><td>13.2</td><td>20.9</td><td>35.6</td><td>16.6</td><td>74.1</td><td>31.5</td><td>35.2</td>
+          </tr>
+          <tr><td>InternVL3.5-241B-A28B</td><td>59.6</td><td>13.8</td><td>2.9</td><td>14.3</td><td>11.7</td><td>18.5</td><td>30.8</td><td>13.4</td><td>68.3</td><td>28.0</td><td>29.8</td></tr>
+          <tr><td>GLM4.5V</td><td>60.2</td><td>13.8</td><td>1.9</td><td>13.5</td><td>12.1</td><td>20.1</td><td>34.2</td><td>7.8</td><td>58.5</td><td>27.0</td><td>27.9</td></tr>
+          <tr>
+            <td rowspan="2" class="group">Open Source Thinking VLMs</td>
+            <td>Qwen3-VL-235B-Thinking</td><td>60.6</td><td>14.6</td><td>2.2</td><td>14.5</td><td>13.1</td><td>20.9</td><td>35.1</td><td>14.7</td><td>67.0</td><td>27.7</td><td>33.1</td>
+          </tr>
+          <tr><td>GLM-4.1V-9B-Thinking</td><td>56.8</td><td>12.9</td><td>1.7</td><td>11.0</td><td>10.2</td><td>18.4</td><td>31.8</td><td>11.9</td><td>59.2</td><td>24.7</td><td>26.0</td></tr>
+          <tr>
+            <td rowspan="3" class="group">Closed Source VLMs</td>
+            <td>Claude Sonnet 4.6</td><td>68.4</td><td>16.0</td><td>2.9</td><td>12.1</td><td>11.2</td><td>19.2</td><td>38.7</td><td>11.7</td><td>68.7</td><td>30.5</td><td>33.5</td>
+          </tr>
+          <tr><td>Gemini 3 Pro</td><td><u>72.2</u></td><td>40.1</td><td>15.4</td><td>6.9</td><td>11.1</td><td>19.8</td><td><u>40.3</u></td><td>28.9</td><td><u>77.6</u></td><td>37.2</td><td>39.1</td></tr>
+          <tr><td>GPT-5.2</td><td>59.1</td><td>9.8</td><td>1.2</td><td>13.3</td><td>11.2</td><td>19.1</td><td>32.9</td><td>14.8</td><td>72.3</td><td>28.6</td><td>30.3</td></tr>
+          <tr>
+            <td rowspan="2" class="group">Fine-Tuned VLMs</td>
+            <td>InternVL3.5-8B-ft</td><td>68.7</td><td>38.4</td><td>22.6</td><td>29.9</td><td>39.4</td><td><u>41.8</u></td><td>36.2</td><td>38.6</td><td>71.2</td><td>42.8</td><td>43.4</td>
+          </tr>
+          <tr><td>Qwen3-VL-8B-ft</td><td>72.1</td><td><u>44.3</u></td><td><u>26.7</u></td><td><u>32.5</u></td><td><u>40.3</u></td><td>39.8</td><td>39.7</td><td><u>42.4</u></td><td>74.3</td><td><u>45.8</u></td><td><u>47.1</u></td></tr>
+          <tr class="ours">
+            <td rowspan="2" class="group">Ours</td>
+            <td>DocLayout-VL-4B-it</td><td>79.6</td><td>71.9</td><td>56.4</td><td>69.5</td><td>71.7</td><td>66.3</td><td>83.6</td><td>57.5</td><td>73.1</td><td>71.8</td><td>73.2</td>
+          </tr>
+          <tr class="ours"><td>DocLayout-VL-8B-it</td><td>86.7</td><td>77.0</td><td>61.0</td><td>77.5</td><td>79.2</td><td>71.1</td><td>87.9</td><td>70.2</td><td>87.2</td><td>79.4</td><td>80.1</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="title is-4 has-text-centered" style="margin-top:3rem;">Zero-Shot Closed-Set Layout Detection</h3>
+    <p class="table-caption has-text-centered">
+      Results across established layout datasets. D4LA = D4LA, PLN = PubLayNet, DLN = DocLayNet, M6D = M6Docs,
+      PRM = PRIMA-LAD, ODB = OmniDocBench, TB = TableBank, CV2 = CORD-v2, HRD = HR-Doc, IDLP = IndicDLP.
+      Metric: mAP@50:95.
+    </p>
+    <div class="table-container">
+      <table class="table is-striped is-hoverable is-fullwidth result-table">
+        <thead>
+          <tr>
+            <th>Type</th><th>Model</th><th>D4LA</th><th>PLN</th><th>DLN</th><th>M6D</th><th>PRM</th><th>ODB</th><th>TB</th><th>CV2</th><th>HRD</th><th>IDLP</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td rowspan="14" class="group">Traditional Layout Models</td><td>YOLOv10x</td><td>68.6</td><td>95.8</td><td>79.9</td><td>-</td><td>63.3</td><td>-</td><td>96.5</td><td>80.3</td><td>-</td><td>55.0</td></tr>
+          <tr><td>YOLOv11</td><td>68.6</td><td>96.1</td><td>79.8</td><td>-</td><td>62.9</td><td>-</td><td>95.5</td><td>80.1</td><td>-</td><td>-</td></tr>
+          <tr><td>DocLayout-YOLO</td><td><u>70.9</u></td><td><strong>96.9</strong></td><td><u>83.4</u></td><td>-</td><td><u>70.3</u></td><td>47.4</td><td><strong>97.5</strong></td><td>80.6</td><td>-</td><td>54.5</td></tr>
+          <tr><td>IndicDLP-YOLO</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>55.0</td></tr>
+          <tr><td>RoDLA</td><td>70.7</td><td>96.0</td><td>68.9</td><td><u>70.0</u></td><td>-</td><td>-</td><td>-</td><td>80.7</td><td>-</td><td>53.1</td></tr>
+          <tr><td>DIT-Large</td><td>68.5</td><td>94.5</td><td>-</td><td>-</td><td>-</td><td>26.9</td><td>-</td><td>80.6</td><td>-</td><td>47.8</td></tr>
+          <tr><td>LayoutParser</td><td>64.7</td><td>89.0</td><td>76.8</td><td>-</td><td>-</td><td>-</td><td>91.2</td><td>-</td><td>-</td><td>-</td></tr>
+          <tr><td>SwinDocSegmenter</td><td>54.4</td><td>93.7</td><td>42.1</td><td>-</td><td>-</td><td>35.9</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+          <tr><td>GraphKD</td><td>41.9</td><td>88.8</td><td>-</td><td>-</td><td>-</td><td>27.1</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+          <tr><td>DocSegTr</td><td>-</td><td>90.4</td><td>69.3</td><td>60.3</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+          <tr><td>DINO</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>49.2</td></tr>
+          <tr><td>LayoutLMv3</td><td>-</td><td>92.0</td><td>64.3</td><td>-</td><td>-</td><td>28.8</td><td>-</td><td>80.0</td><td>-</td><td>-</td></tr>
+          <tr><td>VGT</td><td>-</td><td>92.0</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+          <tr><td>M2Doc</td><td>-</td><td>91.5</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+          <tr><td rowspan="3" class="group">Closed Source VLMs</td><td>Claude Sonnet 4.6</td><td>52.4</td><td>87.2</td><td>75.0</td><td>42.9</td><td>56.8</td><td>61.8</td><td>92.4</td><td>80.1</td><td>61.9</td><td>46.7</td></tr>
+          <tr><td>Gemini 3 Pro</td><td>64.1</td><td>92.3</td><td>80.1</td><td>58.6</td><td>69.6</td><td><u>64.2</u></td><td>96.1</td><td><u>82.2</u></td><td><u>66.1</u></td><td>50.6</td></tr>
+          <tr><td>GPT-5.2</td><td>45.4</td><td>82.1</td><td>65.1</td><td>43.0</td><td>52.9</td><td>61.1</td><td>86.9</td><td>78.8</td><td>60.4</td><td>41.1</td></tr>
+          <tr><td rowspan="2" class="group">Fine-Tuned VLMs</td><td>InternVL 3.5-8B-ft</td><td>66.9</td><td>87.5</td><td>78.3</td><td>52.1</td><td>64.4</td><td>53.4</td><td>90.9</td><td>78.6</td><td>51.7</td><td>49.2</td></tr>
+          <tr><td>Qwen3-VL-8B-ft</td><td>69.3</td><td>91.6</td><td>77.0</td><td>56.8</td><td>65.2</td><td>58.9</td><td>91.5</td><td>79.3</td><td>56.5</td><td><u>58.3</u></td></tr>
+          <tr class="ours"><td rowspan="2" class="group">Ours</td><td>DocLayout-VL-4B-it</td><td>75.7</td><td>94.7</td><td>80.9</td><td>66.7</td><td>77.5</td><td>58.1</td><td>96.9</td><td>82.9</td><td>58.9</td><td>65.2</td></tr>
+          <tr class="ours"><td>DocLayout-VL-8B-it</td><td>79.6</td><td><u>96.5</u></td><td>84.3</td><td>76.9</td><td>81.2</td><td>67.8</td><td><u>97.3</u></td><td>84.3</td><td>69.3</td><td>77.5</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <div class="footer-logos">
+        <a href="https://eccv.ecva.net/" target="_blank" rel="noopener noreferrer" title="ECCV 2026">
+          <img src="static/images/logos/eccv_logo.png" alt="ECCV logo" />
+        </a>
+        <a href="https://bharatgen.com/" target="_blank" rel="noopener noreferrer" title="BharatGen">
+          <img src="static/images/logos/bharatgen_logo.png" alt="BharatGen logo" />
+        </a>
+        <a href="https://www.iiit.ac.in/" target="_blank" rel="noopener noreferrer" title="IIIT Hyderabad">
+          <img src="static/images/logos/iiith_logo.jpg" alt="IIIT Hyderabad logo" />
+        </a>
+      </div>
+
+      <div style="margin-bottom: 2rem;">
+        <p style="font-size:0.78rem; color:#aaa; margin-bottom:0.6rem;
+                  letter-spacing:0.04em; text-transform:uppercase; font-weight:600;">
+          Visitor Map
+        </p>
+        <div style="display:flex; justify-content:center;">
+          <a href="https://info.flagcounter.com/8zjF">
+            <img src="https://s01.flagcounter.com/map/8zjF/size_s/txt_000000/border_CCCCCC/pageviews_1/viewers_0/flags_0/" alt="Flag Counter" border="0">
+          </a>
+        </div>
+      </div>
+
+      <p style="margin-top:1.5rem;">
+        This page follows the DoCoG project page structure and uses the
+        <a href="https://github.com/eliahuhorwitz/Academic-project-page-template">Academic Project Page Template</a>,
+        adopted from the <a href="https://nerfies.github.io">Nerfies</a> project page.<br>
+        This website is licensed under a
+        <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+          Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const burger = document.querySelector('.navbar-burger');
+    const menu = document.getElementById(burger.dataset.target);
+    burger.addEventListener('click', () => {
+      burger.classList.toggle('is-active');
+      menu.classList.toggle('is-active');
+    });
+  });
+</script>
+</body>
+</html>
