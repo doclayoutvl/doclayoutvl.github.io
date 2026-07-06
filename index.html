@@ -17,8 +17,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link
-    href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,wght@0,400;0,700;1,400&family=Noto+Sans:ital,wght@0,400;0,700;1,400&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
     rel="stylesheet">
+  <script>document.documentElement.classList.add('motion-ready');</script>
 
   <style>
     :root {
@@ -32,20 +33,22 @@
       --ours: #0b7f79;
     }
     html { scroll-behavior: smooth; }
-    body { font-family: 'Noto Sans', sans-serif; color: var(--ink); background: #fff; }
-    .title, h1, h2, h3, h4 { font-family: 'Google Sans', 'Noto Sans', sans-serif; color: var(--ink); }
-    .section { padding-top: 4.5rem; padding-bottom: 4.5rem; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; font-size: 17px; font-weight: 400; line-height: 1.75; color: var(--ink); background: #fff; -webkit-font-smoothing: antialiased; }
+    .title, h1, h2, h3, h4 { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: var(--ink); letter-spacing: 0; }
+    code { font-family: 'JetBrains Mono', monospace; }
+    .section { padding-top: 6.5rem; padding-bottom: 6.5rem; }
     .section-alt { background: var(--soft); }
     .navbar {
       position: sticky; top: 0; z-index: 50; min-height: 3.35rem;
-      background: rgba(255,255,255,0.96) !important; border-bottom: 1px solid var(--line);
-      backdrop-filter: blur(12px);
+      background: rgba(255,255,255,0.82) !important; border-bottom: 1px solid transparent;
+      backdrop-filter: blur(20px) saturate(160%); transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
     }
+    .navbar.scrolled { border-bottom-color: var(--line); box-shadow: 0 4px 18px rgba(20,58,72,0.04); }
     .navbar-item { font-size: 0.9rem; color: #415866; }
     .navbar-item:hover { color: var(--blue) !important; background: transparent !important; }
     .navbar-brand .navbar-item { color: var(--navy); letter-spacing: 0; }
     .publication-header { background: linear-gradient(180deg, #f3fafb 0%, #fff 82%); }
-    .publication-header .hero-body { padding-top: 4rem; padding-bottom: 2.2rem; }
+    .publication-header .hero-body { padding-top: 4rem; padding-bottom: 2.2rem; animation: heroFadeUp 0.65s ease both; }
     .publication-title { max-width: 1060px; margin-inline: auto; font-size: 2.65rem !important; font-weight: 700; line-height: 1.15; }
     .hero-pitch { max-width: 820px; margin: 1rem auto 0; color: #526774; font-size: 1.04rem; line-height: 1.72; }
     .publication-venue { font-size: 0.9rem; font-weight: 700; color: var(--teal); margin-bottom: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; }
@@ -59,7 +62,7 @@
     .fig-caption strong { color: var(--ink); }
     #abstract .content { font-size: 1rem; line-height: 1.8; }
     .stat-box { text-align: center; background: transparent; border: 0; border-left: 2px solid #c8dde2; padding: 0.6rem 0.5rem; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-    .stat-box .stat-num { font-size: 1.95rem; font-weight: 700; color: var(--blue); font-family: 'Google Sans', sans-serif; line-height: 1.1; }
+    .stat-box .stat-num { font-size: 1.95rem; font-weight: 700; color: var(--blue); font-family: 'Inter', sans-serif; line-height: 1.1; font-variant-numeric: tabular-nums; }
     .stat-box .stat-lbl { font-size: 0.76rem; color: var(--muted); margin-top: 0.4rem; line-height: 1.4; }
     .method-card { border: 1px solid var(--line); border-radius: 6px; padding: 1.35rem; background: #fff; height: 100%; box-shadow: 0 3px 14px rgba(30,68,82,0.035); }
     .method-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: 0.6rem; }
@@ -87,10 +90,10 @@
     .leaderboard-head { padding: 1.35rem 1.5rem 1rem; border-bottom: 1px solid var(--line); background: #fbfdfe; }
     .leaderboard-title { font-size: 1.15rem; font-weight: 700; margin: 0; }
     .leaderboard-subtitle { color: var(--muted); font-size: 0.82rem; margin-top: 0.35rem; }
-    .benchmark-tabs { display: flex; gap: 0; overflow-x: auto; border-bottom: 1px solid var(--line); scrollbar-width: thin; }
-    .benchmark-tab { flex: 1 0 auto; min-width: 104px; border: 0; border-right: 1px solid var(--line); border-bottom: 3px solid transparent; background: #fff; color: #54707d; padding: 0.85rem 0.9rem 0.72rem; font: inherit; font-size: 0.82rem; font-weight: 700; cursor: pointer; }
-    .benchmark-tab:hover { background: var(--soft); color: var(--blue); }
-    .benchmark-tab.is-active { color: var(--blue); border-bottom-color: var(--teal); background: #f4fbfb; }
+    .benchmark-tabs { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; padding: 1rem 1.2rem; border-bottom: 1px solid var(--line); background: #fbfdfe; }
+    .benchmark-tab { flex: 0 0 auto; border: 1px solid var(--line); border-radius: 999px; background: #fff; color: #54707d; padding: 0.42rem 1rem; font: inherit; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease, transform 0.18s ease; }
+    .benchmark-tab:hover { background: rgba(21,149,143,0.08); border-color: var(--teal); color: var(--teal); transform: translateY(-1px); }
+    .benchmark-tab.is-active { color: #fff; border-color: var(--teal); background: var(--teal); }
     .leaderboard-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.85rem 1.5rem; border-bottom: 1px solid var(--line); }
     .metric-picker { display: flex; align-items: center; gap: 0.65rem; }
     .metric-picker label { font-size: 0.76rem; color: var(--muted); font-weight: 700; text-transform: uppercase; }
@@ -99,7 +102,7 @@
     .bar-chart { padding: 1.25rem 1.5rem 1.5rem; }
     .bar-row { display: grid; grid-template-columns: minmax(150px, 245px) minmax(220px, 1fr); gap: 1rem; align-items: center; min-height: 38px; }
     .bar-label { min-width: 0; display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 0.55rem; align-items: center; line-height: 1.15; }
-    .model-logo { width: 28px; height: 28px; border: 1px solid #d5e1e5; border-radius: 5px; background: #fff; display: inline-flex; align-items: center; justify-content: center; color: #45616e; font-family: 'Google Sans', sans-serif; font-size: 0.58rem; font-weight: 700; line-height: 1; flex: 0 0 auto; }
+    .model-logo { width: 28px; height: 28px; border: 1px solid #d5e1e5; border-radius: 5px; background: #fff; display: inline-flex; align-items: center; justify-content: center; color: #45616e; font-family: 'Inter', sans-serif; font-size: 0.58rem; font-weight: 700; line-height: 1; flex: 0 0 auto; }
     .model-logo img { width: 16px; height: 16px; object-fit: contain; opacity: 0.82; }
     .model-logo i { font-size: 0.88rem; }
     .model-logo.is-ours { border-color: var(--teal); background: var(--teal); color: #fff; }
@@ -109,13 +112,34 @@
     .bar-model { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #304b59; font-size: 0.78rem; font-weight: 600; }
     .bar-family { display: block; margin-top: 0.18rem; color: #96a3aa; font-size: 0.64rem; text-transform: uppercase; }
     .bar-track { position: relative; height: 22px; border-left: 1px solid #b9cbd1; background-image: linear-gradient(to right, #e9f0f2 1px, transparent 1px); background-size: 25% 100%; }
-    .bar-fill { position: relative; height: 100%; min-width: 2px; background: #79aebe; transition: width 0.55s cubic-bezier(.2,.7,.3,1), background 0.2s ease; }
+    .bar-fill { position: relative; height: 100%; min-width: 2px; background: #79aebe; transition: width 0.48s ease-in-out, background 0.18s ease; }
     .bar-row.is-ours .bar-fill { background: linear-gradient(90deg, var(--teal), var(--blue)); }
     .bar-row.is-ours .bar-model { color: var(--ours); font-weight: 700; }
     .bar-row:hover .bar-fill, .bar-row:focus-within .bar-fill { background: var(--navy); }
     .bar-value { position: absolute; right: 0.45rem; top: 50%; transform: translateY(-50%); color: #fff; font-size: 0.7rem; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.22); }
     .bar-fill.is-short .bar-value { left: calc(100% + 0.45rem); right: auto; color: #49616d; text-shadow: none; }
     .leaderboard-empty { padding: 2rem; color: var(--muted); text-align: center; }
+    .leaderboard-context { border-top: 1px solid var(--line); padding: 1.1rem 1.5rem 1.35rem; background: #fbfdfe; }
+    .context-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.7rem; }
+    .context-head strong { font-size: 0.84rem; font-weight: 600; }
+    .context-head span { color: var(--muted); font-size: 0.73rem; }
+    .context-gain { display: inline-flex; align-items: center; border-radius: 999px; padding: 0.2rem 0.6rem; background: rgba(21,149,143,0.1); color: var(--ours) !important; font-weight: 600; white-space: nowrap; }
+    .context-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+    .context-table th { color: #87969e; font-size: 0.64rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; text-align: left; padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--line); }
+    .context-table th:last-child, .context-table td:last-child { text-align: right; }
+    .context-table td { color: #405965; padding: 0.58rem 0.6rem; border-bottom: 1px solid #e8eff1; vertical-align: middle; }
+    .context-table tr:last-child td { border-bottom: 0; }
+    .context-table tr.is-ours td { background: rgba(21,149,143,0.045); color: var(--ours); font-weight: 600; }
+    .context-model { display: flex; align-items: center; gap: 0.55rem; }
+    .context-model .model-logo { width: 24px; height: 24px; }
+    .motion-ready .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .motion-ready .reveal.visible { opacity: 1; transform: translateY(0); }
+    @keyframes heroFadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @media (prefers-reduced-motion: reduce) {
+      .motion-ready .reveal { opacity: 1; transform: none; transition: none; }
+      .publication-header .hero-body { animation: none; }
+      .bar-fill { transition: none; }
+    }
     @media (max-width: 768px) {
       html, body { max-width: 100%; overflow-x: hidden; }
       .section { padding-top: 3.3rem; padding-bottom: 3.3rem; }
@@ -134,6 +158,7 @@
       .leaderboard-shell { width: 100%; max-width: 100%; }
       .leaderboard-toolbar { align-items: flex-start; flex-direction: column; }
       .leaderboard-hint { display: none; }
+      .context-head { align-items: flex-start; flex-direction: column; }
       .bar-chart { padding-inline: 0.85rem; overflow-x: auto; }
       .bar-row { min-width: 600px; grid-template-columns: 200px 1fr; gap: 0.75rem; }
       .stat-box { border-left: 0; border-top: 2px solid #c8dde2; }
@@ -473,6 +498,7 @@
         <span class="leaderboard-hint">Hover or focus a bar for its exact score. Higher is better.</span>
       </div>
       <div class="bar-chart" role="tabpanel" aria-live="polite"></div>
+      <div class="leaderboard-context" aria-live="polite"></div>
     </div>
 
     <div class="leaderboard-shell" id="closed-leaderboard">
@@ -489,136 +515,11 @@
         <span class="leaderboard-hint">Unreported models are omitted for the selected dataset.</span>
       </div>
       <div class="bar-chart" role="tabpanel" aria-live="polite"></div>
+      <div class="leaderboard-context" aria-live="polite"></div>
     </div>
   </div>
 </section>
 
-<section class="section legacy-results" id="results-data" hidden aria-hidden="true">
-  <div class="container is-max-widescreen">
-    <h2 class="title is-3 has-text-centered">Results</h2>
-    <p class="has-text-centered result-note" style="margin-bottom:2rem;">
-      The core result is not just a better score. It is a failure mode exposed: large VLMs can describe documents, but
-      they do not reliably produce structured, pixel-grounded layout parses. DocLayout-VL closes that gap by combining
-      open-set semantics, hierarchy, and mask grounding.
-    </p>
-
-    <div class="columns is-centered" style="margin-bottom:2rem;">
-      <div class="column is-2"><div class="stat-box"><div class="stat-num">79.4</div><div class="stat-lbl">Overall Score<br>DocLayout-VL-8B-it</div></div></div>
-      <div class="column is-2"><div class="stat-box"><div class="stat-num">86.7</div><div class="stat-lbl">Open mIoU<br>Flat Benchmark</div></div></div>
-      <div class="column is-2"><div class="stat-box"><div class="stat-num">77.5</div><div class="stat-lbl">Open mIoU<br>Hierarchical Benchmark</div></div></div>
-      <div class="column is-2"><div class="stat-box"><div class="stat-num">87.9</div><div class="stat-lbl">Open mIoU<br>Curved Benchmark</div></div></div>
-      <div class="column is-2"><div class="stat-box"><div class="stat-num">87.2</div><div class="stat-lbl">GE<br>Promptable Benchmark</div></div></div>
-    </div>
-
-    <h3 class="title is-4 has-text-centered">Open-Set, Hierarchical, Curved, and Promptable Layout Understanding</h3>
-    <p class="table-caption has-text-centered">
-      <strong>Benchmarks:</strong> FB = FlatLay-Docs-Bench, HB = HierLay-Docs-Bench, CB = CurveLay-Docs-Bench,
-      PB = PromptLay-Docs-Bench. <strong>Metrics:</strong> Om = Open mIoU, OR = Open RQ, OA = Open AP,
-      mST = mean Semantic TEDS, mhF = mean thresholded hF1, cI = cumulative IoU, GE = g-eval,
-      OS = Overall Score, OS<sub>en</sub> = Overall Score English.
-    </p>
-    <div class="table-container">
-      <table class="table is-striped is-hoverable is-fullwidth result-table">
-        <thead>
-          <tr>
-            <th rowspan="2">Type</th>
-            <th rowspan="2">Model</th>
-            <th colspan="3">FB</th>
-            <th colspan="3">HB</th>
-            <th>CB</th>
-            <th colspan="2">PB</th>
-            <th colspan="2">Overall</th>
-          </tr>
-          <tr>
-            <th>Om</th><th>OR</th><th>OA</th>
-            <th>Om</th><th>mST</th><th>mhF</th>
-            <th>Om</th>
-            <th>cI</th><th>GE</th>
-            <th>OS</th><th>OS<sub>en</sub></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td rowspan="7" class="group">Small Open Source VLMs</td>
-            <td>Qwen3-VL-8B-it</td><td>63.9</td><td>24.3</td><td>5.8</td><td>18.6</td><td>12.7</td><td>20.6</td><td>36.0</td><td>20.7</td><td>62.7</td><td>31.6</td><td>35.4</td>
-          </tr>
-          <tr><td>InternVL3.5-8B</td><td>60.1</td><td>14.7</td><td>2.4</td><td>16.1</td><td>11.3</td><td>19.9</td><td>32.8</td><td>14.6</td><td>57.1</td><td>27.5</td><td>29.1</td></tr>
-          <tr><td>Gemma3-12B</td><td>51.7</td><td>2.1</td><td>0.1</td><td>6.5</td><td>12.8</td><td>17.5</td><td>29.3</td><td>3.5</td><td>54.2</td><td>22.1</td><td>23.8</td></tr>
-          <tr><td>Florence 2</td><td>8.4</td><td>0.8</td><td>0.1</td><td>4.7</td><td>11.9</td><td>14.7</td><td>4.3</td><td>3.9</td><td>42.6</td><td>10.3</td><td>11.0</td></tr>
-          <tr><td>LLaVa 1.6</td><td>10.3</td><td>1.2</td><td>0.1</td><td>3.3</td><td>9.5</td><td>16.4</td><td>5.2</td><td>2.6</td><td>40.1</td><td>10.0</td><td>10.5</td></tr>
-          <tr><td>mPLUG-DocOwl 2</td><td>19.7</td><td>1.8</td><td>0.4</td><td>2.8</td><td>8.0</td><td>15.1</td><td>10.3</td><td>4.2</td><td>46.1</td><td>12.8</td><td>13.1</td></tr>
-          <tr><td>Chandra</td><td>59.6</td><td>10.4</td><td>1.7</td><td>0.7</td><td>10.7</td><td>18.7</td><td>30.9</td><td>0.5</td><td>30.8</td><td>20.1</td><td>24.9</td></tr>
-          <tr>
-            <td rowspan="3" class="group">Large Open Source VLMs</td>
-            <td>Qwen3-VL-235B-it</td><td>61.3</td><td>17.1</td><td>3.1</td><td>20.0</td><td>13.2</td><td>20.9</td><td>35.6</td><td>16.6</td><td>74.1</td><td>31.5</td><td>35.2</td>
-          </tr>
-          <tr><td>InternVL3.5-241B-A28B</td><td>59.6</td><td>13.8</td><td>2.9</td><td>14.3</td><td>11.7</td><td>18.5</td><td>30.8</td><td>13.4</td><td>68.3</td><td>28.0</td><td>29.8</td></tr>
-          <tr><td>GLM4.5V</td><td>60.2</td><td>13.8</td><td>1.9</td><td>13.5</td><td>12.1</td><td>20.1</td><td>34.2</td><td>7.8</td><td>58.5</td><td>27.0</td><td>27.9</td></tr>
-          <tr>
-            <td rowspan="2" class="group">Open Source Thinking VLMs</td>
-            <td>Qwen3-VL-235B-Thinking</td><td>60.6</td><td>14.6</td><td>2.2</td><td>14.5</td><td>13.1</td><td>20.9</td><td>35.1</td><td>14.7</td><td>67.0</td><td>27.7</td><td>33.1</td>
-          </tr>
-          <tr><td>GLM-4.1V-9B-Thinking</td><td>56.8</td><td>12.9</td><td>1.7</td><td>11.0</td><td>10.2</td><td>18.4</td><td>31.8</td><td>11.9</td><td>59.2</td><td>24.7</td><td>26.0</td></tr>
-          <tr>
-            <td rowspan="3" class="group">Closed Source VLMs</td>
-            <td>Claude Sonnet 4.6</td><td>68.4</td><td>16.0</td><td>2.9</td><td>12.1</td><td>11.2</td><td>19.2</td><td>38.7</td><td>11.7</td><td>68.7</td><td>30.5</td><td>33.5</td>
-          </tr>
-          <tr><td>Gemini 3 Pro</td><td><u>72.2</u></td><td>40.1</td><td>15.4</td><td>6.9</td><td>11.1</td><td>19.8</td><td><u>40.3</u></td><td>28.9</td><td><u>77.6</u></td><td>37.2</td><td>39.1</td></tr>
-          <tr><td>GPT-5.2</td><td>59.1</td><td>9.8</td><td>1.2</td><td>13.3</td><td>11.2</td><td>19.1</td><td>32.9</td><td>14.8</td><td>72.3</td><td>28.6</td><td>30.3</td></tr>
-          <tr>
-            <td rowspan="2" class="group">Fine-Tuned VLMs</td>
-            <td>InternVL3.5-8B-ft</td><td>68.7</td><td>38.4</td><td>22.6</td><td>29.9</td><td>39.4</td><td><u>41.8</u></td><td>36.2</td><td>38.6</td><td>71.2</td><td>42.8</td><td>43.4</td>
-          </tr>
-          <tr><td>Qwen3-VL-8B-ft</td><td>72.1</td><td><u>44.3</u></td><td><u>26.7</u></td><td><u>32.5</u></td><td><u>40.3</u></td><td>39.8</td><td>39.7</td><td><u>42.4</u></td><td>74.3</td><td><u>45.8</u></td><td><u>47.1</u></td></tr>
-          <tr class="ours">
-            <td rowspan="2" class="group">Ours</td>
-            <td>DocLayout-VL-4B-it</td><td>79.6</td><td>71.9</td><td>56.4</td><td>69.5</td><td>71.7</td><td>66.3</td><td>83.6</td><td>57.5</td><td>73.1</td><td>71.8</td><td>73.2</td>
-          </tr>
-          <tr class="ours"><td>DocLayout-VL-8B-it</td><td>86.7</td><td>77.0</td><td>61.0</td><td>77.5</td><td>79.2</td><td>71.1</td><td>87.9</td><td>70.2</td><td>87.2</td><td>79.4</td><td>80.1</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <h3 class="title is-4 has-text-centered" style="margin-top:3rem;">Zero-Shot Closed-Set Layout Detection</h3>
-    <p class="table-caption has-text-centered">
-      Results across established layout datasets. D4LA = D4LA, PLN = PubLayNet, DLN = DocLayNet, M6D = M6Docs,
-      PRM = PRIMA-LAD, ODB = OmniDocBench, TB = TableBank, CV2 = CORD-v2, HRD = HR-Doc, IDLP = IndicDLP.
-      Metric: mAP@50:95.
-    </p>
-    <div class="table-container">
-      <table class="table is-striped is-hoverable is-fullwidth result-table">
-        <thead>
-          <tr>
-            <th>Type</th><th>Model</th><th>D4LA</th><th>PLN</th><th>DLN</th><th>M6D</th><th>PRM</th><th>ODB</th><th>TB</th><th>CV2</th><th>HRD</th><th>IDLP</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td rowspan="14" class="group">Traditional Layout Models</td><td>YOLOv10x</td><td>68.6</td><td>95.8</td><td>79.9</td><td>-</td><td>63.3</td><td>-</td><td>96.5</td><td>80.3</td><td>-</td><td>55.0</td></tr>
-          <tr><td>YOLOv11</td><td>68.6</td><td>96.1</td><td>79.8</td><td>-</td><td>62.9</td><td>-</td><td>95.5</td><td>80.1</td><td>-</td><td>-</td></tr>
-          <tr><td>DocLayout-YOLO</td><td><u>70.9</u></td><td><strong>96.9</strong></td><td><u>83.4</u></td><td>-</td><td><u>70.3</u></td><td>47.4</td><td><strong>97.5</strong></td><td>80.6</td><td>-</td><td>54.5</td></tr>
-          <tr><td>IndicDLP-YOLO</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>55.0</td></tr>
-          <tr><td>RoDLA</td><td>70.7</td><td>96.0</td><td>68.9</td><td><u>70.0</u></td><td>-</td><td>-</td><td>-</td><td>80.7</td><td>-</td><td>53.1</td></tr>
-          <tr><td>DIT-Large</td><td>68.5</td><td>94.5</td><td>-</td><td>-</td><td>-</td><td>26.9</td><td>-</td><td>80.6</td><td>-</td><td>47.8</td></tr>
-          <tr><td>LayoutParser</td><td>64.7</td><td>89.0</td><td>76.8</td><td>-</td><td>-</td><td>-</td><td>91.2</td><td>-</td><td>-</td><td>-</td></tr>
-          <tr><td>SwinDocSegmenter</td><td>54.4</td><td>93.7</td><td>42.1</td><td>-</td><td>-</td><td>35.9</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
-          <tr><td>GraphKD</td><td>41.9</td><td>88.8</td><td>-</td><td>-</td><td>-</td><td>27.1</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
-          <tr><td>DocSegTr</td><td>-</td><td>90.4</td><td>69.3</td><td>60.3</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
-          <tr><td>DINO</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>49.2</td></tr>
-          <tr><td>LayoutLMv3</td><td>-</td><td>92.0</td><td>64.3</td><td>-</td><td>-</td><td>28.8</td><td>-</td><td>80.0</td><td>-</td><td>-</td></tr>
-          <tr><td>VGT</td><td>-</td><td>92.0</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
-          <tr><td>M2Doc</td><td>-</td><td>91.5</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
-          <tr><td rowspan="3" class="group">Closed Source VLMs</td><td>Claude Sonnet 4.6</td><td>52.4</td><td>87.2</td><td>75.0</td><td>42.9</td><td>56.8</td><td>61.8</td><td>92.4</td><td>80.1</td><td>61.9</td><td>46.7</td></tr>
-          <tr><td>Gemini 3 Pro</td><td>64.1</td><td>92.3</td><td>80.1</td><td>58.6</td><td>69.6</td><td><u>64.2</u></td><td>96.1</td><td><u>82.2</u></td><td><u>66.1</u></td><td>50.6</td></tr>
-          <tr><td>GPT-5.2</td><td>45.4</td><td>82.1</td><td>65.1</td><td>43.0</td><td>52.9</td><td>61.1</td><td>86.9</td><td>78.8</td><td>60.4</td><td>41.1</td></tr>
-          <tr><td rowspan="2" class="group">Fine-Tuned VLMs</td><td>InternVL 3.5-8B-ft</td><td>66.9</td><td>87.5</td><td>78.3</td><td>52.1</td><td>64.4</td><td>53.4</td><td>90.9</td><td>78.6</td><td>51.7</td><td>49.2</td></tr>
-          <tr><td>Qwen3-VL-8B-ft</td><td>69.3</td><td>91.6</td><td>77.0</td><td>56.8</td><td>65.2</td><td>58.9</td><td>91.5</td><td>79.3</td><td>56.5</td><td><u>58.3</u></td></tr>
-          <tr class="ours"><td rowspan="2" class="group">Ours</td><td>DocLayout-VL-4B-it</td><td>75.7</td><td>94.7</td><td>80.9</td><td>66.7</td><td>77.5</td><td>58.1</td><td>96.9</td><td>82.9</td><td>58.9</td><td>65.2</td></tr>
-          <tr class="ours"><td>DocLayout-VL-8B-it</td><td>79.6</td><td><u>96.5</u></td><td>84.3</td><td>76.9</td><td>81.2</td><td>67.8</td><td><u>97.3</u></td><td>84.3</td><td>69.3</td><td>77.5</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
 
 <footer class="footer">
   <div class="container">
@@ -670,26 +571,50 @@
       menu.classList.toggle('is-active');
     });
 
-    function readRows(table) {
-      let family = '';
-      return Array.from(table.tBodies[0].rows).map((row) => {
-        const cells = Array.from(row.cells);
-        let modelIndex = 0;
-        if (cells[0].classList.contains('group')) {
-          family = cells[0].textContent.trim();
-          modelIndex = 1;
-        }
-        return {
-          family,
-          model: cells[modelIndex].textContent.trim(),
-          ours: row.classList.contains('ours'),
-          values: cells.slice(modelIndex + 1).map((cell) => {
-            const value = cell.textContent.trim();
-            return value === '-' ? null : Number(value);
-          })
-        };
-      });
-    }
+    const openRows = [
+      { family: "Small Open Source VLMs", model: "Qwen3-VL-8B-it", ours: false, values: [63.9,24.3,5.8,18.6,12.7,20.6,36,20.7,62.7,31.6,35.4] },
+      { family: "Small Open Source VLMs", model: "InternVL3.5-8B", ours: false, values: [60.1,14.7,2.4,16.1,11.3,19.9,32.8,14.6,57.1,27.5,29.1] },
+      { family: "Small Open Source VLMs", model: "Gemma3-12B", ours: false, values: [51.7,2.1,0.1,6.5,12.8,17.5,29.3,3.5,54.2,22.1,23.8] },
+      { family: "Small Open Source VLMs", model: "Florence 2", ours: false, values: [8.4,0.8,0.1,4.7,11.9,14.7,4.3,3.9,42.6,10.3,11] },
+      { family: "Small Open Source VLMs", model: "LLaVa 1.6", ours: false, values: [10.3,1.2,0.1,3.3,9.5,16.4,5.2,2.6,40.1,10,10.5] },
+      { family: "Small Open Source VLMs", model: "mPLUG-DocOwl 2", ours: false, values: [19.7,1.8,0.4,2.8,8,15.1,10.3,4.2,46.1,12.8,13.1] },
+      { family: "Small Open Source VLMs", model: "Chandra", ours: false, values: [59.6,10.4,1.7,0.7,10.7,18.7,30.9,0.5,30.8,20.1,24.9] },
+      { family: "Large Open Source VLMs", model: "Qwen3-VL-235B-it", ours: false, values: [61.3,17.1,3.1,20,13.2,20.9,35.6,16.6,74.1,31.5,35.2] },
+      { family: "Large Open Source VLMs", model: "InternVL3.5-241B-A28B", ours: false, values: [59.6,13.8,2.9,14.3,11.7,18.5,30.8,13.4,68.3,28,29.8] },
+      { family: "Large Open Source VLMs", model: "GLM4.5V", ours: false, values: [60.2,13.8,1.9,13.5,12.1,20.1,34.2,7.8,58.5,27,27.9] },
+      { family: "Open Source Thinking VLMs", model: "Qwen3-VL-235B-Thinking", ours: false, values: [60.6,14.6,2.2,14.5,13.1,20.9,35.1,14.7,67,27.7,33.1] },
+      { family: "Open Source Thinking VLMs", model: "GLM-4.1V-9B-Thinking", ours: false, values: [56.8,12.9,1.7,11,10.2,18.4,31.8,11.9,59.2,24.7,26] },
+      { family: "Closed Source VLMs", model: "Claude Sonnet 4.6", ours: false, values: [68.4,16,2.9,12.1,11.2,19.2,38.7,11.7,68.7,30.5,33.5] },
+      { family: "Closed Source VLMs", model: "Gemini 3 Pro", ours: false, values: [72.2,40.1,15.4,6.9,11.1,19.8,40.3,28.9,77.6,37.2,39.1] },
+      { family: "Closed Source VLMs", model: "GPT-5.2", ours: false, values: [59.1,9.8,1.2,13.3,11.2,19.1,32.9,14.8,72.3,28.6,30.3] },
+      { family: "Fine-Tuned VLMs", model: "InternVL3.5-8B-ft", ours: false, values: [68.7,38.4,22.6,29.9,39.4,41.8,36.2,38.6,71.2,42.8,43.4] },
+      { family: "Fine-Tuned VLMs", model: "Qwen3-VL-8B-ft", ours: false, values: [72.1,44.3,26.7,32.5,40.3,39.8,39.7,42.4,74.3,45.8,47.1] },
+      { family: "Ours", model: "DocLayout-VL-4B-it", ours: true, values: [79.6,71.9,56.4,69.5,71.7,66.3,83.6,57.5,73.1,71.8,73.2] },
+      { family: "Ours", model: "DocLayout-VL-8B-it", ours: true, values: [86.7,77,61,77.5,79.2,71.1,87.9,70.2,87.2,79.4,80.1] }
+    ];
+    const closedRows = [
+      { family: "Traditional Layout Models", model: "YOLOv10x", ours: false, values: [68.6,95.8,79.9,null,63.3,null,96.5,80.3,null,55] },
+      { family: "Traditional Layout Models", model: "YOLOv11", ours: false, values: [68.6,96.1,79.8,null,62.9,null,95.5,80.1,null,null] },
+      { family: "Traditional Layout Models", model: "DocLayout-YOLO", ours: false, values: [70.9,96.9,83.4,null,70.3,47.4,97.5,80.6,null,54.5] },
+      { family: "Traditional Layout Models", model: "IndicDLP-YOLO", ours: false, values: [null,null,null,null,null,null,null,null,null,55] },
+      { family: "Traditional Layout Models", model: "RoDLA", ours: false, values: [70.7,96,68.9,70,null,null,null,80.7,null,53.1] },
+      { family: "Traditional Layout Models", model: "DIT-Large", ours: false, values: [68.5,94.5,null,null,null,26.9,null,80.6,null,47.8] },
+      { family: "Traditional Layout Models", model: "LayoutParser", ours: false, values: [64.7,89,76.8,null,null,null,91.2,null,null,null] },
+      { family: "Traditional Layout Models", model: "SwinDocSegmenter", ours: false, values: [54.4,93.7,42.1,null,null,35.9,null,null,null,null] },
+      { family: "Traditional Layout Models", model: "GraphKD", ours: false, values: [41.9,88.8,null,null,null,27.1,null,null,null,null] },
+      { family: "Traditional Layout Models", model: "DocSegTr", ours: false, values: [null,90.4,69.3,60.3,null,null,null,null,null,null] },
+      { family: "Traditional Layout Models", model: "DINO", ours: false, values: [null,null,null,null,null,null,null,null,null,49.2] },
+      { family: "Traditional Layout Models", model: "LayoutLMv3", ours: false, values: [null,92,64.3,null,null,28.8,null,80,null,null] },
+      { family: "Traditional Layout Models", model: "VGT", ours: false, values: [null,92,null,null,null,null,null,null,null,null] },
+      { family: "Traditional Layout Models", model: "M2Doc", ours: false, values: [null,91.5,null,null,null,null,null,null,null,null] },
+      { family: "Closed Source VLMs", model: "Claude Sonnet 4.6", ours: false, values: [52.4,87.2,75,42.9,56.8,61.8,92.4,80.1,61.9,46.7] },
+      { family: "Closed Source VLMs", model: "Gemini 3 Pro", ours: false, values: [64.1,92.3,80.1,58.6,69.6,64.2,96.1,82.2,66.1,50.6] },
+      { family: "Closed Source VLMs", model: "GPT-5.2", ours: false, values: [45.4,82.1,65.1,43,52.9,61.1,86.9,78.8,60.4,41.1] },
+      { family: "Fine-Tuned VLMs", model: "InternVL 3.5-8B-ft", ours: false, values: [66.9,87.5,78.3,52.1,64.4,53.4,90.9,78.6,51.7,49.2] },
+      { family: "Fine-Tuned VLMs", model: "Qwen3-VL-8B-ft", ours: false, values: [69.3,91.6,77,56.8,65.2,58.9,91.5,79.3,56.5,58.3] },
+      { family: "Ours", model: "DocLayout-VL-4B-it", ours: true, values: [75.7,94.7,80.9,66.7,77.5,58.1,96.9,82.9,58.9,65.2] },
+      { family: "Ours", model: "DocLayout-VL-8B-it", ours: true, values: [79.6,96.5,84.3,76.9,81.2,67.8,97.3,84.3,69.3,77.5] }
+    ];
 
     function modelMark(model, ours) {
       const name = model.toLowerCase();
@@ -720,6 +645,7 @@
     function createLeaderboard(root, rows, benchmarks, metricSelect) {
       const tabs = root.querySelector('.benchmark-tabs');
       const chart = root.querySelector('.bar-chart');
+      const context = root.querySelector('.leaderboard-context');
       let activeBenchmark = 0;
       let activeMetric = 0;
 
@@ -745,6 +671,7 @@
         chart.innerHTML = '';
         if (!ranked.length) {
           chart.innerHTML = '<div class="leaderboard-empty">No reported scores for this benchmark.</div>';
+          context.innerHTML = '';
           return;
         }
 
@@ -765,13 +692,43 @@
           fill.tabIndex = 0;
           fill.setAttribute('role', 'img');
           fill.setAttribute('aria-label', `${entry.model}: ${value.toFixed(1)} ${metric.label}`);
-          fill.title = `${entry.model} · ${metric.label}: ${value.toFixed(1)}`;
+          fill.title = `${entry.model} - ${metric.label}: ${value.toFixed(1)}`;
           fill.innerHTML = `<span class="bar-value">${value.toFixed(1)}</span>`;
           track.appendChild(fill);
           row.append(label, track);
           chart.appendChild(row);
           requestAnimationFrame(() => { fill.style.width = `${Math.max(0, Math.min(100, value))}%`; });
         });
+
+        const bestBaseline = ranked.find((entry) => !entry.ours);
+        const snapshot = ['DocLayout-VL-8B-it', 'DocLayout-VL-4B-it']
+          .map((model) => ranked.find((entry) => entry.model === model))
+          .filter(Boolean);
+        if (bestBaseline) snapshot.push(bestBaseline);
+        const bestOurs = snapshot.find((entry) => entry.ours);
+        const gain = bestOurs && bestBaseline
+          ? bestOurs.values[metric.index] - bestBaseline.values[metric.index]
+          : null;
+        const gainLabel = gain === null
+          ? ''
+          : `<span class="context-gain">${gain >= 0 ? '+' : ''}${gain.toFixed(1)} vs. best baseline</span>`;
+        const snapshotRows = snapshot.map((entry) => {
+          const rank = ranked.indexOf(entry) + 1;
+          return `<tr class="${entry.ours ? 'is-ours' : ''}">
+            <td><span class="context-model">${modelMark(entry.model, entry.ours)}<span>${entry.model}</span></span></td>
+            <td>${entry.ours ? 'Ours' : 'Best baseline'}</td>
+            <td>#${rank}</td>
+            <td>${entry.values[metric.index].toFixed(1)}</td>
+          </tr>`;
+        }).join('');
+        context.innerHTML = `<div class="context-head">
+          <div><strong>Selected benchmark snapshot</strong><br><span>${benchmark.label} - ${metric.label}</span></div>
+          ${gainLabel}
+        </div>
+        <table class="context-table">
+          <thead><tr><th>Method</th><th>Context</th><th>Rank</th><th>Score</th></tr></thead>
+          <tbody>${snapshotRows}</tbody>
+        </table>`;
       }
 
       benchmarks.forEach((benchmark, index) => {
@@ -805,7 +762,6 @@
       renderChart();
     }
 
-    const sourceTables = document.querySelectorAll('#results-data .result-table');
     const openBenchmarks = [
       { label: 'Flat (FB)', metrics: [
         { label: 'Open mIoU', index: 0 }, { label: 'Open RQ', index: 1 }, { label: 'Open AP', index: 2 }
@@ -826,16 +782,37 @@
 
     createLeaderboard(
       document.getElementById('open-leaderboard'),
-      readRows(sourceTables[0]),
+      openRows,
       openBenchmarks,
       document.getElementById('open-metric')
     );
     createLeaderboard(
       document.getElementById('closed-leaderboard'),
-      readRows(sourceTables[1]),
+      closedRows,
       closedBenchmarks,
       null
     );
+
+    const revealTargets = document.querySelectorAll(
+      'section .title, section .content, section .figure-panel, section .fig-caption, section .method-card, section .stat-box, section .idea-strip, section .tag-row, .leaderboard-shell, .teaser .container'
+    );
+    revealTargets.forEach((element) => element.classList.add('reveal'));
+    if ('IntersectionObserver' in window) {
+      const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        });
+      }, { threshold: 0.12 });
+      revealTargets.forEach((element) => revealObserver.observe(element));
+    } else {
+      revealTargets.forEach((element) => element.classList.add('visible'));
+    }
+
+    const updateNavbar = () => document.querySelector('.navbar').classList.toggle('scrolled', window.scrollY > 20);
+    updateNavbar();
+    window.addEventListener('scroll', updateNavbar, { passive: true });
   });
 </script>
 </body>
