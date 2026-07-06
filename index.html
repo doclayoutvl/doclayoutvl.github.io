@@ -21,101 +21,122 @@
     rel="stylesheet">
 
   <style>
-    body { font-family: 'Noto Sans', sans-serif; color: #363636; }
-    .title, h1, h2, h3, h4 { font-family: 'Google Sans', 'Noto Sans', sans-serif; }
-    .navbar { border-bottom: 1px solid #f0f0f0; }
-    .publication-header { background: #fff; }
-    .publication-title { font-size: 2.25rem !important; font-weight: 700; line-height: 1.22; }
-    .publication-subtitle { color: #555; font-size: 1.15rem; margin-top: 0.5rem; }
-    .hero-pitch {
-      max-width: 850px; margin: 1rem auto 0; color: #4a4a4a;
-      font-size: 1.05rem; line-height: 1.75;
+    :root {
+      --ink: #172b3a;
+      --muted: #61727f;
+      --line: #dce6ea;
+      --soft: #f4f8fa;
+      --blue: #176f8a;
+      --teal: #15958f;
+      --navy: #123d56;
+      --ours: #0b7f79;
     }
-    .publication-venue {
-      font-size: 1.15rem; font-weight: 700; color: #D8552B;
-      margin-bottom: 0.5rem; letter-spacing: 0.03em;
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Noto Sans', sans-serif; color: var(--ink); background: #fff; }
+    .title, h1, h2, h3, h4 { font-family: 'Google Sans', 'Noto Sans', sans-serif; color: var(--ink); }
+    .section { padding-top: 4.5rem; padding-bottom: 4.5rem; }
+    .section-alt { background: var(--soft); }
+    .navbar {
+      position: sticky; top: 0; z-index: 50; min-height: 3.35rem;
+      background: rgba(255,255,255,0.96) !important; border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(12px);
     }
-    .author-block a { color: #363636; text-decoration: none; border-bottom: 1px dotted #aaa; }
-    .author-block a:hover { color: #D8552B; border-color: #D8552B; }
-    .section-alt { background: #fafafa; }
-    .teaser { padding: 1rem 1.5rem 2.5rem; }
-    .figure-panel {
-      width: 100%; height: auto; display: block; border: 1px solid #e1e1e1;
-      border-radius: 8px; background: #fff; box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-    }
-    .fig-caption {
-      text-align: center; font-size: 0.9rem; color: #555;
-      margin-top: 0.75rem; line-height: 1.65;
-    }
-    .fig-caption strong { color: #333; }
+    .navbar-item { font-size: 0.9rem; color: #415866; }
+    .navbar-item:hover { color: var(--blue) !important; background: transparent !important; }
+    .navbar-brand .navbar-item { color: var(--navy); letter-spacing: 0; }
+    .publication-header { background: linear-gradient(180deg, #f3fafb 0%, #fff 82%); }
+    .publication-header .hero-body { padding-top: 4rem; padding-bottom: 2.2rem; }
+    .publication-title { max-width: 1060px; margin-inline: auto; font-size: 2.65rem !important; font-weight: 700; line-height: 1.15; }
+    .hero-pitch { max-width: 820px; margin: 1rem auto 0; color: #526774; font-size: 1.04rem; line-height: 1.72; }
+    .publication-venue { font-size: 0.9rem; font-weight: 700; color: var(--teal); margin-bottom: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; }
+    .author-block a { color: var(--ink); text-decoration: none; border-bottom: 1px solid #a8c0c8; }
+    .author-block a:hover { color: var(--blue); border-color: var(--blue); }
+    .button.is-dark.is-outlined { border-color: var(--navy); color: var(--navy); background: #fff; }
+    .button.is-dark.is-outlined:hover { background: var(--navy); color: #fff; }
+    .teaser { padding: 0.75rem 1.5rem 3.5rem; }
+    .figure-panel { width: 100%; height: auto; display: block; border: 1px solid var(--line); border-radius: 6px; background: #fff; box-shadow: 0 7px 26px rgba(26,67,84,0.08); }
+    .fig-caption { text-align: center; font-size: 0.88rem; color: var(--muted); margin-top: 0.8rem; line-height: 1.65; }
+    .fig-caption strong { color: var(--ink); }
     #abstract .content { font-size: 1rem; line-height: 1.8; }
-    .stat-box {
-      text-align: center; background: #fff; border: 1px solid #e4e4e4;
-      border-radius: 10px; padding: 1.1rem 0.75rem; height: 100%;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-    }
-    .stat-box .stat-num {
-      font-size: 1.85rem; font-weight: 700; color: #D8552B;
-      font-family: 'Google Sans', sans-serif; line-height: 1.15;
-    }
-    .stat-box .stat-lbl { font-size: 0.78rem; color: #777; margin-top: 0.35rem; line-height: 1.4; }
-    .method-card {
-      border: 1.5px solid #e8e8e8; border-radius: 10px; padding: 1.5rem;
-      background: #fff; height: 100%;
-    }
+    .stat-box { text-align: center; background: transparent; border: 0; border-left: 2px solid #c8dde2; padding: 0.6rem 0.5rem; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .stat-box .stat-num { font-size: 1.95rem; font-weight: 700; color: var(--blue); font-family: 'Google Sans', sans-serif; line-height: 1.1; }
+    .stat-box .stat-lbl { font-size: 0.76rem; color: var(--muted); margin-top: 0.4rem; line-height: 1.4; }
+    .method-card { border: 1px solid var(--line); border-radius: 6px; padding: 1.35rem; background: #fff; height: 100%; box-shadow: 0 3px 14px rgba(30,68,82,0.035); }
     .method-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: 0.6rem; }
-    .method-card p { font-size: 0.9rem; color: #555; line-height: 1.7; }
-    .result-table thead { background: #14223E; }
-    .result-table thead th { color: white; }
-    .result-table tr.ours td { font-weight: 700; color: #D8552B; background: #fdf3ef; }
-    .result-table th, .result-table td { text-align: center !important; vertical-align: middle !important; }
-    .result-table th:first-child, .result-table td:first-child { text-align: left !important; }
-    .result-table { font-size: 0.78rem; }
-    .result-table .group { font-weight: 700; color: #555; background: #f7f7f7; }
-    .table-caption {
-      color: #555; font-size: 0.9rem; line-height: 1.65;
-      margin: 0.5rem auto 1rem; max-width: 980px;
-    }
-    .result-note { color: #666; font-size: 0.92rem; line-height: 1.7; }
-    .idea-strip {
-      background: #14223E; color: #fff; border-radius: 10px; padding: 1.25rem 1.5rem;
-      margin-top: 1.75rem; line-height: 1.7;
-    }
+    .method-card p { font-size: 0.9rem; color: #536874; line-height: 1.7; }
+    .result-note { color: var(--muted); font-size: 0.94rem; line-height: 1.7; max-width: 900px; margin-inline: auto; }
+    .idea-strip { background: var(--navy); color: #fff; border-radius: 6px; padding: 1.2rem 1.5rem; margin-top: 1.75rem; line-height: 1.7; }
     .idea-strip strong { color: #fff; }
-    .coming-soon {
-      display: inline-flex; align-items: center; gap: 0.3rem;
-      background: #fff3cd; border: 1px solid #ffc107; color: #856404;
-      font-size: 0.72rem; font-weight: 600; padding: 0.15rem 0.5rem;
-      border-radius: 4px; letter-spacing: 0.03em; text-transform: uppercase;
-      vertical-align: middle; margin-left: 4px;
-    }
-    .institution-logos {
-      display: flex; align-items: center; justify-content: center; gap: 3rem;
-      flex-wrap: wrap; margin-top: 2rem; padding: 1.25rem 1.5rem;
-      background: #fdf8f6; border: 1px solid #f0ddd6; border-radius: 12px;
-    }
-    .institution-logos a {
-      display: inline-flex; align-items: center; opacity: 0.9;
-      transition: opacity 0.2s ease, transform 0.2s ease;
-    }
-    .institution-logos a:hover { opacity: 1; transform: scale(1.05); }
-    .institution-logos img { height: 72px; width: auto; object-fit: contain; }
-    .footer-logos {
-      display: flex; align-items: center; justify-content: center; gap: 2rem;
-      flex-wrap: wrap; margin-bottom: 1.25rem;
-    }
+    .coming-soon { display: inline-flex; align-items: center; background: #eaf6f5; border: 1px solid #9bd3ce; color: #176d69; font-size: 0.68rem; font-weight: 700; padding: 0.12rem 0.4rem; border-radius: 3px; text-transform: uppercase; vertical-align: middle; margin-left: 4px; }
+    .institution-logos { display: flex; align-items: center; justify-content: center; gap: 2.7rem; flex-wrap: wrap; margin-top: 1.7rem; }
+    .institution-logos a { display: inline-flex; align-items: center; height: 55px; opacity: 0.82; transition: opacity 0.2s ease, transform 0.2s ease; }
+    .institution-logos a:hover { opacity: 1; transform: translateY(-2px); }
+    .institution-logos img { max-height: 52px; width: auto; max-width: 130px; object-fit: contain; }
+    .institution-logos a:first-child img { max-height: 45px; }
+    .footer-logos { display: flex; align-items: center; justify-content: center; gap: 2rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
     .footer-logos a { display: inline-flex; align-items: center; opacity: 0.7; transition: opacity 0.2s ease; }
     .footer-logos a:hover { opacity: 1; }
-    .footer-logos img { height: 36px; width: auto; object-fit: contain; }
-    footer.footer { background: #fafafa; border-top: 1px solid #f0f0f0; }
-    footer .content { font-size: 0.87rem; color: #777; }
-    .accent { color: #D8552B; }
-    .tag-row { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; margin-top: 1rem; }
+    .footer-logos img { max-height: 34px; max-width: 90px; width: auto; object-fit: contain; }
+    footer.footer { background: var(--soft); border-top: 1px solid var(--line); }
+    footer .content { font-size: 0.85rem; color: var(--muted); }
+    .accent { color: var(--teal); }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 0.45rem; justify-content: center; margin-top: 1rem; }
+    .tag-row .tag { border: 1px solid #cfe1e5; background: #fff !important; color: #3b6673 !important; }
+
+    .leaderboard-shell { max-width: 1080px; margin: 2.2rem auto 0; border: 1px solid var(--line); border-radius: 7px; background: #fff; overflow: hidden; box-shadow: 0 8px 30px rgba(22,65,81,0.07); }
+    .leaderboard-head { padding: 1.35rem 1.5rem 1rem; border-bottom: 1px solid var(--line); background: #fbfdfe; }
+    .leaderboard-title { font-size: 1.15rem; font-weight: 700; margin: 0; }
+    .leaderboard-subtitle { color: var(--muted); font-size: 0.82rem; margin-top: 0.35rem; }
+    .benchmark-tabs { display: flex; gap: 0; overflow-x: auto; border-bottom: 1px solid var(--line); scrollbar-width: thin; }
+    .benchmark-tab { flex: 1 0 auto; min-width: 104px; border: 0; border-right: 1px solid var(--line); border-bottom: 3px solid transparent; background: #fff; color: #54707d; padding: 0.85rem 0.9rem 0.72rem; font: inherit; font-size: 0.82rem; font-weight: 700; cursor: pointer; }
+    .benchmark-tab:hover { background: var(--soft); color: var(--blue); }
+    .benchmark-tab.is-active { color: var(--blue); border-bottom-color: var(--teal); background: #f4fbfb; }
+    .leaderboard-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.85rem 1.5rem; border-bottom: 1px solid var(--line); }
+    .metric-picker { display: flex; align-items: center; gap: 0.65rem; }
+    .metric-picker label { font-size: 0.76rem; color: var(--muted); font-weight: 700; text-transform: uppercase; }
+    .metric-picker select { border: 1px solid #bfd2d8; border-radius: 4px; background: #fff; color: var(--ink); padding: 0.42rem 2.2rem 0.42rem 0.65rem; font: inherit; font-size: 0.84rem; }
+    .leaderboard-hint { color: #82929b; font-size: 0.76rem; }
+    .bar-chart { padding: 1.25rem 1.5rem 1.5rem; }
+    .bar-row { display: grid; grid-template-columns: minmax(150px, 245px) minmax(220px, 1fr); gap: 1rem; align-items: center; min-height: 38px; }
+    .bar-label { min-width: 0; display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 0.55rem; align-items: center; line-height: 1.15; }
+    .model-logo { width: 28px; height: 28px; border: 1px solid #d5e1e5; border-radius: 5px; background: #fff; display: inline-flex; align-items: center; justify-content: center; color: #45616e; font-family: 'Google Sans', sans-serif; font-size: 0.58rem; font-weight: 700; line-height: 1; flex: 0 0 auto; }
+    .model-logo img { width: 16px; height: 16px; object-fit: contain; opacity: 0.82; }
+    .model-logo i { font-size: 0.88rem; }
+    .model-logo.is-ours { border-color: var(--teal); background: var(--teal); color: #fff; }
+    .model-logo.is-yolo { background: #eef4ff; color: #345a91; }
+    .model-logo.is-layout { background: #f1f7f8; color: var(--blue); }
+    .model-copy { min-width: 0; }
+    .bar-model { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #304b59; font-size: 0.78rem; font-weight: 600; }
+    .bar-family { display: block; margin-top: 0.18rem; color: #96a3aa; font-size: 0.64rem; text-transform: uppercase; }
+    .bar-track { position: relative; height: 22px; border-left: 1px solid #b9cbd1; background-image: linear-gradient(to right, #e9f0f2 1px, transparent 1px); background-size: 25% 100%; }
+    .bar-fill { position: relative; height: 100%; min-width: 2px; background: #79aebe; transition: width 0.55s cubic-bezier(.2,.7,.3,1), background 0.2s ease; }
+    .bar-row.is-ours .bar-fill { background: linear-gradient(90deg, var(--teal), var(--blue)); }
+    .bar-row.is-ours .bar-model { color: var(--ours); font-weight: 700; }
+    .bar-row:hover .bar-fill, .bar-row:focus-within .bar-fill { background: var(--navy); }
+    .bar-value { position: absolute; right: 0.45rem; top: 50%; transform: translateY(-50%); color: #fff; font-size: 0.7rem; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.22); }
+    .bar-fill.is-short .bar-value { left: calc(100% + 0.45rem); right: auto; color: #49616d; text-shadow: none; }
+    .leaderboard-empty { padding: 2rem; color: var(--muted); text-align: center; }
     @media (max-width: 768px) {
-      .publication-title { font-size: 1.55rem !important; }
-      .publication-subtitle { font-size: 1rem; }
-      .institution-logos { gap: 1.75rem; padding: 1rem; }
-      .institution-logos img { height: 52px; }
+      html, body { max-width: 100%; overflow-x: hidden; }
+      .section { padding-top: 3.3rem; padding-bottom: 3.3rem; }
+      .navbar .container, .navbar-brand { width: 100%; max-width: 100%; }
+      .publication-header .hero-body { padding: 2.8rem 1rem 2rem; }
+      .publication-header .container, .publication-header .columns, .publication-header .column {
+        width: 100%; max-width: 100%; min-width: 0; margin-left: 0; margin-right: 0;
+      }
+      .publication-header .column { padding-left: 0; padding-right: 0; }
+      .publication-title { width: 100%; max-width: 100%; font-size: 1.72rem !important; overflow-wrap: anywhere; }
+      .hero-pitch { width: 100%; max-width: 100%; font-size: 0.94rem; overflow-wrap: anywhere; }
+      .publication-authors { font-size: 1rem !important; overflow-wrap: anywhere; }
+      .institution-logos { gap: 1.5rem; }
+      .institution-logos a { height: 42px; }
+      .institution-logos img { max-height: 40px; max-width: 100px; }
+      .leaderboard-shell { width: 100%; max-width: 100%; }
+      .leaderboard-toolbar { align-items: flex-start; flex-direction: column; }
+      .leaderboard-hint { display: none; }
+      .bar-chart { padding-inline: 0.85rem; overflow-x: auto; }
+      .bar-row { min-width: 600px; grid-template-columns: 200px 1fr; gap: 0.75rem; }
+      .stat-box { border-left: 0; border-top: 2px solid #c8dde2; }
     }
   </style>
 </head>
@@ -423,6 +444,57 @@
 
 <section class="section" id="results">
   <div class="container is-max-widescreen">
+    <h2 class="title is-3 has-text-centered">Benchmark Results</h2>
+    <p class="has-text-centered result-note">
+      DocLayout-VL turns the hardest layout capabilities into a single strong result: open-set semantics,
+      hierarchy, curved regions, promptable control, and closed-set transfer without task-specific detectors.
+      Select a benchmark and metric to explore every reported model comparison.
+    </p>
+
+    <div class="columns is-centered" style="margin-top:2rem; margin-bottom:2.5rem;">
+      <div class="column is-2"><div class="stat-box"><div class="stat-num">79.4</div><div class="stat-lbl">Overall Score<br>DocLayout-VL-8B-it</div></div></div>
+      <div class="column is-2"><div class="stat-box"><div class="stat-num">86.7</div><div class="stat-lbl">Open mIoU<br>Flat Benchmark</div></div></div>
+      <div class="column is-2"><div class="stat-box"><div class="stat-num">77.5</div><div class="stat-lbl">Open mIoU<br>Hierarchical Benchmark</div></div></div>
+      <div class="column is-2"><div class="stat-box"><div class="stat-num">87.9</div><div class="stat-lbl">Open mIoU<br>Curved Benchmark</div></div></div>
+      <div class="column is-2"><div class="stat-box"><div class="stat-num">87.2</div><div class="stat-lbl">G-Eval<br>Promptable Benchmark</div></div></div>
+    </div>
+
+    <div class="leaderboard-shell" id="open-leaderboard">
+      <div class="leaderboard-head">
+        <h3 class="leaderboard-title">Foundational Layout Understanding</h3>
+        <p class="leaderboard-subtitle">Flat, hierarchical, curved, promptable, and overall evaluation on HOPLay-Docs-Bench.</p>
+      </div>
+      <div class="benchmark-tabs" role="tablist" aria-label="Foundational layout benchmarks"></div>
+      <div class="leaderboard-toolbar">
+        <div class="metric-picker">
+          <label for="open-metric">Metric</label>
+          <select id="open-metric" aria-label="Select leaderboard metric"></select>
+        </div>
+        <span class="leaderboard-hint">Hover or focus a bar for its exact score. Higher is better.</span>
+      </div>
+      <div class="bar-chart" role="tabpanel" aria-live="polite"></div>
+    </div>
+
+    <div class="leaderboard-shell" id="closed-leaderboard">
+      <div class="leaderboard-head">
+        <h3 class="leaderboard-title">Zero-Shot Closed-Set Layout Detection</h3>
+        <p class="leaderboard-subtitle">mAP@50:95 across ten established document layout datasets.</p>
+      </div>
+      <div class="benchmark-tabs" role="tablist" aria-label="Closed-set layout datasets"></div>
+      <div class="leaderboard-toolbar">
+        <div class="metric-picker">
+          <label>Metric</label>
+          <span class="tag is-info is-light">mAP@50:95</span>
+        </div>
+        <span class="leaderboard-hint">Unreported models are omitted for the selected dataset.</span>
+      </div>
+      <div class="bar-chart" role="tabpanel" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<section class="section legacy-results" id="results-data" hidden aria-hidden="true">
+  <div class="container is-max-widescreen">
     <h2 class="title is-3 has-text-centered">Results</h2>
     <p class="has-text-centered result-note" style="margin-bottom:2rem;">
       The core result is not just a better score. It is a failure mode exposed: large VLMs can describe documents, but
@@ -576,9 +648,11 @@
       </div>
 
       <p style="margin-top:1.5rem;">
-        This page follows the DoCoG project page structure and uses the
+        This page follows the visual and interactive language of the
+        <a href="https://m3grounder.github.io/">M3Grounder project page</a> and uses the
         <a href="https://github.com/eliahuhorwitz/Academic-project-page-template">Academic Project Page Template</a>,
         adopted from the <a href="https://nerfies.github.io">Nerfies</a> project page.<br>
+        Leaderboard brand marks are provided by <a href="https://simpleicons.org/">Simple Icons</a>.<br>
         This website is licensed under a
         <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
           Creative Commons Attribution-ShareAlike 4.0 International License</a>.
@@ -595,6 +669,173 @@
       burger.classList.toggle('is-active');
       menu.classList.toggle('is-active');
     });
+
+    function readRows(table) {
+      let family = '';
+      return Array.from(table.tBodies[0].rows).map((row) => {
+        const cells = Array.from(row.cells);
+        let modelIndex = 0;
+        if (cells[0].classList.contains('group')) {
+          family = cells[0].textContent.trim();
+          modelIndex = 1;
+        }
+        return {
+          family,
+          model: cells[modelIndex].textContent.trim(),
+          ours: row.classList.contains('ours'),
+          values: cells.slice(modelIndex + 1).map((cell) => {
+            const value = cell.textContent.trim();
+            return value === '-' ? null : Number(value);
+          })
+        };
+      });
+    }
+
+    function modelMark(model, ours) {
+      const name = model.toLowerCase();
+      const image = (file, label) => `<span class="model-logo" title="${label}"><img src="static/images/model-logos/${file}.svg" alt="" aria-hidden="true"></span>`;
+      const letters = (text, extraClass = '') => `<span class="model-logo ${extraClass}" aria-hidden="true">${text}</span>`;
+
+      if (ours) return letters('DL', 'is-ours');
+      if (name.includes('qwen') || name.includes('mplug')) return image('alibabacloud', 'Alibaba Cloud');
+      if (name.includes('gemini') || name.includes('gemma')) return image('google', 'Google');
+      if (name.includes('claude')) return image('anthropic', 'Anthropic');
+      if (name.includes('llava')) return image('meta', 'LLaMA-based model');
+      if (name.includes('internvl') || name.includes('chandra') || name.includes('glm')) return image('huggingface', 'Open model');
+      if (name.includes('florence')) return '<span class="model-logo" title="Microsoft"><i class="fab fa-microsoft" aria-hidden="true"></i></span>';
+      if (name.includes('gpt')) return letters('AI');
+      if (name.includes('yolo')) return letters(name.includes('doclayout') ? 'DY' : name.includes('indic') ? 'IY' : 'YO', 'is-yolo');
+      if (name.includes('layoutparser')) return letters('LP', 'is-layout');
+      if (name.includes('layoutlm')) return letters('LM', 'is-layout');
+      if (name.includes('rodla')) return letters('RD', 'is-layout');
+      if (name.includes('swin')) return letters('SD', 'is-layout');
+      if (name.includes('graphkd')) return letters('GK', 'is-layout');
+      if (name.includes('docseg')) return letters('DS', 'is-layout');
+      if (name.includes('dino')) return letters('Di', 'is-layout');
+      if (name.includes('dit')) return letters('DiT', 'is-layout');
+      if (name.includes('kosmos')) return letters('K', 'is-layout');
+      return letters(model.replace(/[^a-z0-9]/gi, '').slice(0, 2).toUpperCase(), 'is-layout');
+    }
+
+    function createLeaderboard(root, rows, benchmarks, metricSelect) {
+      const tabs = root.querySelector('.benchmark-tabs');
+      const chart = root.querySelector('.bar-chart');
+      let activeBenchmark = 0;
+      let activeMetric = 0;
+
+      function setMetricOptions() {
+        if (!metricSelect) return;
+        metricSelect.innerHTML = '';
+        benchmarks[activeBenchmark].metrics.forEach((metric, index) => {
+          const option = document.createElement('option');
+          option.value = index;
+          option.textContent = metric.label;
+          metricSelect.appendChild(option);
+        });
+        metricSelect.value = String(activeMetric);
+      }
+
+      function renderChart() {
+        const benchmark = benchmarks[activeBenchmark];
+        const metric = benchmark.metrics[activeMetric];
+        const ranked = rows
+          .filter((row) => Number.isFinite(row.values[metric.index]))
+          .sort((a, b) => b.values[metric.index] - a.values[metric.index]);
+
+        chart.innerHTML = '';
+        if (!ranked.length) {
+          chart.innerHTML = '<div class="leaderboard-empty">No reported scores for this benchmark.</div>';
+          return;
+        }
+
+        ranked.forEach((entry) => {
+          const value = entry.values[metric.index];
+          const row = document.createElement('div');
+          row.className = `bar-row${entry.ours ? ' is-ours' : ''}`;
+
+          const label = document.createElement('div');
+          label.className = 'bar-label';
+          label.innerHTML = `${modelMark(entry.model, entry.ours)}<span class="model-copy"><span class="bar-model" title="${entry.model}">${entry.model}</span><span class="bar-family">${entry.family}</span></span>`;
+
+          const track = document.createElement('div');
+          track.className = 'bar-track';
+          const fill = document.createElement('div');
+          fill.className = `bar-fill${value < 13 ? ' is-short' : ''}`;
+          fill.style.width = '0%';
+          fill.tabIndex = 0;
+          fill.setAttribute('role', 'img');
+          fill.setAttribute('aria-label', `${entry.model}: ${value.toFixed(1)} ${metric.label}`);
+          fill.title = `${entry.model} · ${metric.label}: ${value.toFixed(1)}`;
+          fill.innerHTML = `<span class="bar-value">${value.toFixed(1)}</span>`;
+          track.appendChild(fill);
+          row.append(label, track);
+          chart.appendChild(row);
+          requestAnimationFrame(() => { fill.style.width = `${Math.max(0, Math.min(100, value))}%`; });
+        });
+      }
+
+      benchmarks.forEach((benchmark, index) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `benchmark-tab${index === 0 ? ' is-active' : ''}`;
+        button.textContent = benchmark.label;
+        button.setAttribute('role', 'tab');
+        button.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
+        button.addEventListener('click', () => {
+          activeBenchmark = index;
+          activeMetric = 0;
+          tabs.querySelectorAll('.benchmark-tab').forEach((tab, tabIndex) => {
+            const isActive = tabIndex === index;
+            tab.classList.toggle('is-active', isActive);
+            tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+          });
+          setMetricOptions();
+          renderChart();
+        });
+        tabs.appendChild(button);
+      });
+
+      if (metricSelect) {
+        metricSelect.addEventListener('change', () => {
+          activeMetric = Number(metricSelect.value);
+          renderChart();
+        });
+      }
+      setMetricOptions();
+      renderChart();
+    }
+
+    const sourceTables = document.querySelectorAll('#results-data .result-table');
+    const openBenchmarks = [
+      { label: 'Flat (FB)', metrics: [
+        { label: 'Open mIoU', index: 0 }, { label: 'Open RQ', index: 1 }, { label: 'Open AP', index: 2 }
+      ]},
+      { label: 'Hierarchy (HB)', metrics: [
+        { label: 'Open mIoU', index: 3 }, { label: 'Mean Semantic TEDS', index: 4 }, { label: 'Mean thresholded hF1', index: 5 }
+      ]},
+      { label: 'Curved (CB)', metrics: [{ label: 'Open mIoU', index: 6 }] },
+      { label: 'Promptable (PB)', metrics: [
+        { label: 'Cumulative IoU', index: 7 }, { label: 'G-Eval', index: 8 }
+      ]},
+      { label: 'Overall', metrics: [
+        { label: 'Overall Score', index: 9 }, { label: 'Overall Score English', index: 10 }
+      ]}
+    ];
+    const closedBenchmarks = ['D4LA', 'PubLayNet', 'DocLayNet', 'M6Docs', 'PRIMA-LAD', 'OmniDocBench', 'TableBank', 'CORD-v2', 'HR-Doc', 'IndicDLP']
+      .map((label, index) => ({ label, metrics: [{ label: 'mAP@50:95', index }] }));
+
+    createLeaderboard(
+      document.getElementById('open-leaderboard'),
+      readRows(sourceTables[0]),
+      openBenchmarks,
+      document.getElementById('open-metric')
+    );
+    createLeaderboard(
+      document.getElementById('closed-leaderboard'),
+      readRows(sourceTables[1]),
+      closedBenchmarks,
+      null
+    );
   });
 </script>
 </body>
