@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>DocLayout Annotator</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 13px;
+  background: #111827;
+  color: #e2e8f0;
+  height: 100vh;
+  display: flex;
+  overflow: hidden;
+}
+
+/* ── Sidebar ── */
+#sidebar {
+  width: 268px;
+  min-width: 268px;
+  background: #1e2433;
+  border-right: 1px solid #2d3748;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+#s-header {
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid #2d3748;
+}
+#s-header h1 { font-size: 13px; font-weight: 700; color: #fff; }
+#s-header p  { font-size: 11px; color: #64748b; margin-top: 2px; }
+
+#ex-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 8px;
+  border-bottom: 1px solid #2d3748;
+}
+.ex-tab {
+  padding: 3px 9px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  background: #111827;
+  color: #64748b;
+  border: 1px solid #2d3748;
+  transition: all .12s;
+  user-select: none;
+}
+.ex-tab:hover { color: #cbd5e1; background: #1a2235; }
+.ex-tab.active { background: #0f766e; color: #fff; border-color: #0f766e; }
+
+#s-progress {
+  padding: 5px 12px;
+  font-size: 11px;
+  color: #64748b;
+  border-bottom: 1px solid #2d3748;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+#prog-bar {
+  flex: 1;
+  height: 4px;
+  background: #2d3748;
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 0 6px;
+}
+#prog-fill {
+  height: 100%;
+  background: #4ade80;
+  border-radius: 2px;
+  transition: width .3s;
+}
+#prog-text { color: #4ade80; font-weight: 600; white-space: nowrap; }
+
+#span-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px;
+}
+.span-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 7px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 1px;
+  border: 1.5px solid transparent;
+  transition: background .1s;
+}
+.span-row:hover { background: #1a2235; }
+.span-row.active { background: #1a2235; border-color: var(--bc, #0f766e); }
+.span-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--bc, #0f766e);
+}
+.span-n   { font-size: 10px; color: #475569; min-width: 18px; }
+.span-l   { flex: 1; font-size: 11.5px; color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.span-st  { font-size: 13px; flex-shrink: 0; }
+
+#s-footer {
+  padding: 8px;
+  border-top: 1px solid #2d3748;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+button {
+  padding: 7px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  border: none;
+  transition: all .12s;
+  text-align: center;
+}
+#btn-clear  { background: #3b1e1e; color: #f87171; border: 1px solid #4c2222; }
+#btn-clear:hover { background: #4c2020; }
+#btn-export { background: #0f766e; color: #fff; }
+#btn-export:hover { background: #0d6b64; }
+#btn-export-single { background: #1e3a5f; color: #93c5fd; border: 1px solid #2d4a70; font-size: 11px; }
+#btn-export-single:hover { background: #253f63; }
+
+/* ── Main ── */
+#main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#toolbar {
+  padding: 8px 14px;
+  background: #1e2433;
+  border-bottom: 1px solid #2d3748;
+  font-size: 11px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+#toolbar kbd {
+  display: inline-block;
+  padding: 1px 5px;
+  background: #111827;
+  border: 1px solid #2d3748;
+  border-radius: 3px;
+  color: #94a3b8;
+  font-family: monospace;
+  font-size: 10px;
+}
+#pts-count {
+  margin-left: auto;
+  font-size: 11px;
+  color: #fbbf24;
+  font-weight: 600;
+}
+#active-lbl {
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  padding: 3px 10px;
+  border-radius: 4px;
+  background: var(--bc, #0f766e);
+  opacity: 0;
+  transition: opacity .2s;
+  white-space: nowrap;
+}
+#active-lbl.vis { opacity: 1; }
+
+#canvas-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  padding: 24px;
+  background: #0b1017;
+}
+
+#img-ctr {
+  position: relative;
+  display: inline-block;
+  line-height: 0;
+  cursor: crosshair;
+  user-select: none;
+}
+#the-img {
+  display: block;
+  max-height: calc(100vh - 128px);
+  max-width: calc(100vw - 316px);
+  object-fit: contain;
+  pointer-events: none;
+  image-rendering: high-quality;
+}
+#the-svg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+/* ── Export modal ── */
+#modal-bg {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.75);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+}
+#modal-bg.show { display: flex; }
+#modal-box {
+  background: #1e2433;
+  border: 1px solid #2d3748;
+  border-radius: 8px;
+  padding: 20px;
+  width: min(760px, 92vw);
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+#modal-box h2  { font-size: 14px; color: #fff; font-weight: 700; }
+#modal-box p   { font-size: 11px; color: #64748b; }
+#modal-box p code {
+  background: #111827;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: monospace;
+  color: #94a3b8;
+}
+#export-ta {
+  flex: 1;
+  min-height: 380px;
+  background: #0b1017;
+  color: #a3e635;
+  border: 1px solid #2d3748;
+  border-radius: 5px;
+  padding: 12px;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 11px;
+  resize: vertical;
+  outline: none;
+  overflow: auto;
+  tab-size: 2;
+}
+#modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+#btn-copy-code   { background: #a3e635; color: #000; font-weight: 700; }
+#btn-copy-code:hover { background: #8fd42a; }
+#btn-close-modal { background: #2d3748; color: #e2e8f0; }
+#btn-close-modal:hover { background: #374151; }
+</style>
+</head>
+<body>
+
+<!-- ── Sidebar ── -->
+<div id="sidebar">
+  <div id="s-header">
+    <h1>DocLayout Annotator</h1>
+    <p>Draw polygons for each [LAY] token</p>
+  </div>
+
+  <div id="ex-tabs"></div>
+
+  <div id="s-progress">
+    <span id="prog-text">0/0</span>
+    <div id="prog-bar"><div id="prog-fill" style="width:0%"></div></div>
+  </div>
+
+  <div id="span-list"></div>
+
+  <div id="s-footer">
+    <button id="btn-clear">✕ Clear current polygon</button>
+    <button id="btn-export-single">↓ Export this example</button>
+    <button id="btn-export">↓ Export all examples</button>
+  </div>
+</div>
+
+<!-- ── Main ── -->
+<div id="main">
+  <div id="toolbar">
+    <span><kbd>Click</kbd> add point</span>
+    <span><kbd>Enter</kbd> / <kbd>Dbl-click</kbd> close</span>
+    <span><kbd>Backspace</kbd> undo</span>
+    <span><kbd>Esc</kbd> cancel</span>
+    <span><kbd>Tab</kbd> next span</span>
+    <span id="pts-count"></span>
+    <div id="active-lbl"></div>
+  </div>
+  <div id="canvas-area">
+    <div id="img-ctr">
+      <img id="the-img" alt="document" />
+      <svg id="the-svg" viewBox="0 0 100 100" preserveAspectRatio="none"
+           xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+  </div>
+</div>
+
+<!-- ── Export modal ── -->
+<div id="modal-bg">
+  <div id="modal-box">
+    <h2>Export — Spans Code</h2>
+    <p>Copy the <code>spans:[...]</code> block you need and replace the matching one in <code>index.html</code>. Unannotated spans are marked <code>/* PLACEHOLDER */</code>.</p>
+    <textarea id="export-ta" readonly spellcheck="false"></textarea>
+    <div id="modal-actions">
+      <button id="btn-copy-code">Copy</button>
+      <button id="btn-close-modal">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+/* ── Color palette (mirrors index.html DC array) ── */
+const DC = [
+  {fill:'rgba(21,149,143,.28)',  border:'#15958f', bright:'rgba(21,149,143,.55)'},
+  {fill:'rgba(23,111,138,.28)',  border:'#176f8a', bright:'rgba(23,111,138,.55)'},
+  {fill:'rgba(245,166,35,.28)',  border:'#e09610', bright:'rgba(245,166,35,.55)'},
+  {fill:'rgba(168,85,247,.28)',  border:'#a855f7', bright:'rgba(168,85,247,.55)'},
+  {fill:'rgba(255,107,53,.28)',  border:'#e05520', bright:'rgba(255,107,53,.55)'},
+  {fill:'rgba(72,199,142,.28)',  border:'#2eaa78', bright:'rgba(72,199,142,.55)'},
+];
+
+/* ── Example span data ── */
+const EXAMPLES = [
+  {
+    id:'task_a', label:'Task A', image:'static/examples/Task_A.png',
+    spans:['article_title','article_subtitle','section-header','section-text',
+           'image_region','section-header','section-text','image_region',
+           'section-header','section-text','image_region','section-header',
+           'section-text','image_region','article_caption','page_number'],
+  },
+  {
+    id:'task_b1', label:'Task B1', image:'static/examples/Task_B1.png',
+    spans:['header','picture','picture','title','table','section header',
+           'table header','table','table header','table','table header','table'],
+  },
+  {
+    id:'task_b2', label:'Task B2', image:'static/examples/Task_B2.png',
+    spans:['bank logo','certification logo','insurer information block',
+           'schedule tile','policyholder details','nominee information',
+           'covered members table','premium breakdown','regulatory info block',
+           'authorization signature','legal clause'],
+  },
+  {
+    id:'task_c', label:'Task C', image:'static/examples/Task_C.png',
+    spans:['fund-title','sub-title','issue-data-strip','logo','header',
+           'fund-info-table','old-line-chart','new-line-chart','source',
+           'performance-section','asset-allocation-section','body',
+           'page-number','footer'],
+  },
+  {
+    id:'task_d1', label:'Task D1', image:'static/examples/Task_D1.webp',
+    spans:['photo','signature','passport_num','surname','given_name','sex',
+           'date_of_birth','nationality','place_of_birth','place_of_issue',
+           'date_of_issue','date_of_expiry','mrz_block'],
+  },
+  {
+    id:'task_d2', label:'Task D2', image:'static/examples/Tasl_D2.jpg',
+    spans:['Figure 2'],
+  },
+];
+
+/* ── Persistence ── */
+let polys = {};
+try { polys = JSON.parse(localStorage.getItem('doclayout_annot') || '{}'); } catch(e) {}
+
+function savePolys() {
+  localStorage.setItem('doclayout_annot', JSON.stringify(polys));
+}
+function pKey(exId, si) { return exId + '_' + si; }
+function getPoly(exId, si)   { return polys[pKey(exId, si)] || null; }
+function setPoly(exId, si, pts) {
+  const k = pKey(exId, si);
+  if (pts && pts.length >= 3) polys[k] = pts;
+  else delete polys[k];
+  savePolys();
+}
+
+/* ── App state ── */
+let curExIdx   = 0;
+let curSpanIdx = 0;
+let drawPts    = [];
+let mouseXY    = null;
+let isDrawing  = false;
+
+/* ── DOM ── */
+const imgCtr    = document.getElementById('img-ctr');
+const imgEl     = document.getElementById('the-img');
+const theSvg    = document.getElementById('the-svg');
+const spanList  = document.getElementById('span-list');
+const exTabsCtr = document.getElementById('ex-tabs');
+const activeLbl = document.getElementById('active-lbl');
+const ptsCount  = document.getElementById('pts-count');
+const progText  = document.getElementById('prog-text');
+const progFill  = document.getElementById('prog-fill');
+
+/* ── Build tabs ── */
+EXAMPLES.forEach((ex, i) => {
+  const t = document.createElement('div');
+  t.className = 'ex-tab' + (i === 0 ? ' active' : '');
+  t.textContent = ex.label;
+  t.addEventListener('click', () => switchEx(i));
+  exTabsCtr.appendChild(t);
+});
+
+/* ── Coord helpers ── */
+function getCoord(e) {
+  const r = imgEl.getBoundingClientRect();
+  const x = ((e.clientX - r.left) / r.width)  * 100;
+  const y = ((e.clientY - r.top)  / r.height) * 100;
+  return [
+    Math.round(Math.max(0, Math.min(100, x)) * 10) / 10,
+    Math.round(Math.max(0, Math.min(100, y)) * 10) / 10,
+  ];
+}
+
+function ns(tag) {
+  return document.createElementNS('http://www.w3.org/2000/svg', tag);
+}
+
+function ptsToStr(pts) {
+  return pts.map(p => p.join(',')).join(' ');
+}
+
+/* ── Render ── */
+function render() {
+  while (theSvg.firstChild) theSvg.removeChild(theSvg.firstChild);
+
+  const ex = EXAMPLES[curExIdx];
+
+  /* Completed polygons for all spans */
+  ex.spans.forEach((lbl, si) => {
+    const pts = getPoly(ex.id, si);
+    if (!pts) return;
+    const c = DC[si % DC.length];
+    const isCur = (si === curSpanIdx);
+
+    const poly = ns('polygon');
+    poly.setAttribute('points', ptsToStr(pts));
+    poly.setAttribute('fill',         isCur ? c.bright : c.fill);
+    poly.setAttribute('stroke',       c.border);
+    poly.setAttribute('stroke-width', isCur ? '1.2' : '0.5');
+    theSvg.appendChild(poly);
+
+    /* Label at centroid for active span */
+    if (isCur) {
+      const cx = pts.reduce((s, p) => s + p[0], 0) / pts.length;
+      const cy = pts.reduce((s, p) => s + p[1], 0) / pts.length;
+      const txt = ns('text');
+      txt.setAttribute('x', cx);
+      txt.setAttribute('y', cy);
+      txt.setAttribute('text-anchor', 'middle');
+      txt.setAttribute('dominant-baseline', 'middle');
+      txt.setAttribute('fill', '#fff');
+      txt.setAttribute('font-size', '2.8');
+      txt.setAttribute('font-family', 'sans-serif');
+      txt.setAttribute('font-weight', '700');
+      txt.setAttribute('paint-order', 'stroke');
+      txt.setAttribute('stroke', '#000');
+      txt.setAttribute('stroke-width', '0.9');
+      txt.textContent = lbl;
+      theSvg.appendChild(txt);
+    }
+  });
+
+  /* In-progress polygon */
+  if (isDrawing && drawPts.length > 0) {
+    /* Semi-transparent fill preview */
+    if (drawPts.length >= 3) {
+      const fp = ns('polygon');
+      fp.setAttribute('points', ptsToStr(drawPts));
+      fp.setAttribute('fill', 'rgba(255,255,80,.15)');
+      fp.setAttribute('stroke', 'none');
+      theSvg.appendChild(fp);
+    }
+
+    /* Edges */
+    const all = mouseXY ? [...drawPts, mouseXY] : drawPts;
+    for (let i = 0; i < all.length - 1; i++) {
+      const ln = ns('line');
+      ln.setAttribute('x1', all[i][0]);   ln.setAttribute('y1', all[i][1]);
+      ln.setAttribute('x2', all[i+1][0]); ln.setAttribute('y2', all[i+1][1]);
+      ln.setAttribute('stroke', '#ffff55');
+      ln.setAttribute('stroke-width', '0.5');
+      const isDash = (i === all.length - 2 && mouseXY);
+      if (isDash) ln.setAttribute('stroke-dasharray', '1,0.5');
+      theSvg.appendChild(ln);
+    }
+
+    /* Close-line preview from cursor → first point */
+    if (mouseXY && drawPts.length >= 2) {
+      const cl = ns('line');
+      cl.setAttribute('x1', mouseXY[0]); cl.setAttribute('y1', mouseXY[1]);
+      cl.setAttribute('x2', drawPts[0][0]); cl.setAttribute('y2', drawPts[0][1]);
+      cl.setAttribute('stroke', 'rgba(255,255,85,.35)');
+      cl.setAttribute('stroke-width', '0.4');
+      cl.setAttribute('stroke-dasharray', '0.8,0.5');
+      theSvg.appendChild(cl);
+    }
+
+    /* Vertex dots */
+    drawPts.forEach((p, i) => {
+      const c = ns('circle');
+      c.setAttribute('cx', p[0]); c.setAttribute('cy', p[1]);
+      c.setAttribute('r', i === 0 ? '1.4' : '0.9');
+      c.setAttribute('fill', i === 0 ? '#fff' : '#ffff55');
+      c.setAttribute('stroke', '#000');
+      c.setAttribute('stroke-width', '0.25');
+      theSvg.appendChild(c);
+    });
+  }
+
+  /* Points counter */
+  if (isDrawing) {
+    ptsCount.textContent = drawPts.length > 0
+      ? `${drawPts.length} pts — Enter/dbl-click to close`
+      : 'Click to start polygon';
+  } else {
+    ptsCount.textContent = '';
+  }
+
+  updateProgress();
+}
+
+/* ── Span list ── */
+function buildSpanList() {
+  spanList.innerHTML = '';
+  const ex = EXAMPLES[curExIdx];
+  ex.spans.forEach((lbl, si) => {
+    const c = DC[si % DC.length];
+    const done = !!getPoly(ex.id, si);
+
+    const row = document.createElement('div');
+    row.className = 'span-row' + (si === curSpanIdx ? ' active' : '');
+    row.style.setProperty('--bc', c.border);
+
+    const dot = document.createElement('div');  dot.className = 'span-dot';
+    const n   = document.createElement('div');  n.className   = 'span-n'; n.textContent = si + 1;
+    const l   = document.createElement('div');  l.className   = 'span-l'; l.textContent = lbl;
+    const st  = document.createElement('div');  st.className  = 'span-st';
+    st.textContent = done ? '✓' : '○';
+    st.style.color = done ? '#4ade80' : '#475569';
+
+    row.append(dot, n, l, st);
+    row.addEventListener('click', () => selectSpan(si));
+    spanList.appendChild(row);
+  });
+}
+
+function updateProgress() {
+  const ex = EXAMPLES[curExIdx];
+  const done  = ex.spans.filter((_, si) => !!getPoly(ex.id, si)).length;
+  const total = ex.spans.length;
+  progText.textContent = done + '/' + total;
+  progFill.style.width = total ? (done / total * 100) + '%' : '0%';
+}
+
+/* ── Switch example ── */
+function switchEx(i) {
+  cancelDraw();
+  curExIdx   = i;
+  curSpanIdx = 0;
+  document.querySelectorAll('.ex-tab').forEach((t, j) => t.classList.toggle('active', j === i));
+  imgEl.src = EXAMPLES[i].image;
+  buildSpanList();
+  updateActiveLbl();
+  render();
+  isDrawing = true;
+  render();
+}
+
+/* ── Select span ── */
+function selectSpan(si) {
+  cancelDraw();
+  curSpanIdx = si;
+  buildSpanList();
+  updateActiveLbl();
+  render();
+  isDrawing = true;
+  render();
+  // scroll row into view
+  const rows = spanList.querySelectorAll('.span-row');
+  if (rows[si]) rows[si].scrollIntoView({ block: 'nearest' });
+}
+
+function updateActiveLbl() {
+  const ex = EXAMPLES[curExIdx];
+  const lbl = ex.spans[curSpanIdx];
+  const c   = DC[curSpanIdx % DC.length];
+  activeLbl.textContent  = (curSpanIdx + 1) + '. ' + lbl;
+  activeLbl.style.background = c.border;
+  activeLbl.classList.add('vis');
+}
+
+/* ── Drawing ── */
+function cancelDraw() {
+  isDrawing = false;
+  drawPts   = [];
+  mouseXY   = null;
+}
+
+function finishPolygon() {
+  if (drawPts.length < 3) { cancelDraw(); isDrawing = true; render(); return; }
+  const ex = EXAMPLES[curExIdx];
+  setPoly(ex.id, curSpanIdx, [...drawPts]);
+  drawPts = [];
+  mouseXY = null;
+  isDrawing = false;
+
+  /* Auto-advance to next unannotated */
+  const next = findNextUnannotated();
+  if (next !== null) curSpanIdx = next;
+
+  buildSpanList();
+  updateActiveLbl();
+  render();
+  isDrawing = true;
+  render();
+}
+
+function findNextUnannotated() {
+  const ex = EXAMPLES[curExIdx];
+  for (let i = curSpanIdx + 1; i < ex.spans.length; i++) {
+    if (!getPoly(ex.id, i)) return i;
+  }
+  for (let i = 0; i < curSpanIdx; i++) {
+    if (!getPoly(ex.id, i)) return i;
+  }
+  return null;
+}
+
+/* ── Events ── */
+imgCtr.addEventListener('click', e => {
+  if (e.detail >= 2) return; // let dblclick handle
+  if (!isDrawing) isDrawing = true;
+  drawPts.push(getCoord(e));
+  render();
+});
+
+imgCtr.addEventListener('dblclick', () => {
+  finishPolygon();
+});
+
+imgCtr.addEventListener('mousemove', e => {
+  if (!isDrawing) return;
+  mouseXY = getCoord(e);
+  render();
+});
+
+imgCtr.addEventListener('mouseleave', () => {
+  mouseXY = null;
+  if (isDrawing) render();
+});
+
+imgCtr.addEventListener('contextmenu', e => {
+  e.preventDefault();
+  if (!isDrawing || drawPts.length === 0) return;
+  drawPts.pop();
+  render();
+});
+
+document.addEventListener('keydown', e => {
+  const tag = e.target.tagName;
+  if (tag === 'TEXTAREA' || tag === 'INPUT') return;
+
+  if (e.key === 'Escape') {
+    cancelDraw();
+    isDrawing = true;
+    render();
+  } else if (e.key === 'Enter') {
+    finishPolygon();
+  } else if (e.key === 'Backspace' || e.key === 'Delete') {
+    e.preventDefault();
+    if (isDrawing && drawPts.length > 0) { drawPts.pop(); render(); }
+  } else if (e.key === 'Tab') {
+    e.preventDefault();
+    const ex   = EXAMPLES[curExIdx];
+    const next = e.shiftKey
+      ? (curSpanIdx - 1 + ex.spans.length) % ex.spans.length
+      : (curSpanIdx + 1) % ex.spans.length;
+    selectSpan(next);
+  } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+    const ex   = EXAMPLES[curExIdx];
+    selectSpan((curSpanIdx + 1) % ex.spans.length);
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    const ex   = EXAMPLES[curExIdx];
+    selectSpan((curSpanIdx - 1 + ex.spans.length) % ex.spans.length);
+  }
+});
+
+/* ── Sidebar buttons ── */
+document.getElementById('btn-clear').addEventListener('click', () => {
+  const ex = EXAMPLES[curExIdx];
+  setPoly(ex.id, curSpanIdx, null);
+  cancelDraw();
+  buildSpanList();
+  render();
+  isDrawing = true;
+  render();
+});
+
+document.getElementById('btn-export').addEventListener('click', () => {
+  document.getElementById('export-ta').value = generateExport(null);
+  document.getElementById('modal-bg').classList.add('show');
+});
+
+document.getElementById('btn-export-single').addEventListener('click', () => {
+  document.getElementById('export-ta').value = generateExport(curExIdx);
+  document.getElementById('modal-bg').classList.add('show');
+});
+
+document.getElementById('btn-copy-code').addEventListener('click', () => {
+  const ta = document.getElementById('export-ta');
+  ta.select();
+  const txt = ta.value;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(txt).then(() => {
+      const btn = document.getElementById('btn-copy-code');
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+    });
+  } else {
+    document.execCommand('copy');
+  }
+});
+
+document.getElementById('btn-close-modal').addEventListener('click', () => {
+  document.getElementById('modal-bg').classList.remove('show');
+});
+
+document.getElementById('modal-bg').addEventListener('click', e => {
+  if (e.target === e.currentTarget) document.getElementById('modal-bg').classList.remove('show');
+});
+
+/* ── Export code generation ── */
+function fmtPts(pts) {
+  return '[' + pts.map(p => '[' + p.map(v => +v.toFixed(1)).join(',') + ']').join(',') + ']';
+}
+
+function generateExport(exIdxFilter) {
+  let out = '';
+  EXAMPLES.forEach((ex, ei) => {
+    if (exIdxFilter !== null && ei !== exIdxFilter) return;
+    out += '/* ── ' + ex.label + ': ' + ex.id + ' ── */\n';
+    out += 'spans:[\n';
+    ex.spans.forEach((lbl, si) => {
+      const pts = getPoly(ex.id, si);
+      const placeholder = !pts;
+      const usePts = pts || [[5,5],[95,5],[95,95],[5,95]];
+      const pad = ' '.repeat(Math.max(1, 32 - lbl.length));
+      const note = placeholder ? ' /* PLACEHOLDER */' : '';
+      out += "  {label:'" + lbl + "'," + pad + "masks:[{points:" + fmtPts(usePts) + "}]}," + note + "\n";
+    });
+    out += '],\n\n';
+  });
+  return out.trimEnd();
+}
+
+/* ── Init ── */
+imgEl.addEventListener('load', () => render());
+switchEx(0);
+</script>
+</body>
+</html>

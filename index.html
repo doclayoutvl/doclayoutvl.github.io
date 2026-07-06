@@ -164,6 +164,37 @@
       .stat-box { border-left: 0; border-top: 2px solid #c8dde2; }
     }
   </style>
+  <style>
+    /* ── Interactive Demo ── */
+    .demo-tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:28px;}
+    .demo-tab{background:transparent;border:1px solid var(--line);border-radius:999px;padding:7px 20px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;font-family:'Inter',sans-serif;transition:all .18s;}
+    .demo-tab:hover{border-color:var(--teal);color:var(--teal);background:rgba(21,149,143,.06);}
+    .demo-tab.is-active{background:var(--teal);border-color:var(--teal);color:#fff;}
+    .demo-panel{display:grid;grid-template-columns:60fr 40fr;gap:28px;align-items:start;}
+    .demo-img-panel{display:flex;flex-direction:column;gap:14px;}
+    .demo-img-container{position:relative;width:100%;border-radius:6px;overflow:hidden;border:1px solid var(--line);background:var(--soft);}
+    .demo-img-container img{width:100%;height:auto;display:block;}
+    .demo-hl-poly{clip-path:inset(0 100% 0 0);}
+    @keyframes demoSweep{from{clip-path:inset(0 100% 0 0);}to{clip-path:inset(0 0% 0 0);}}
+    .demo-hl-poly.sweeping{animation:demoSweep .55s ease-out forwards;}
+    .demo-chat-panel{background:#fff;border:1px solid var(--line);border-radius:6px;padding:24px;display:flex;flex-direction:column;gap:14px;min-height:320px;box-shadow:0 3px 14px rgba(30,68,82,.04);}
+    .demo-q-bubble{align-self:flex-end;background:#eef6f7;border-radius:12px 4px 12px 12px;padding:12px 16px;font-size:13.5px;line-height:1.65;color:var(--ink);max-width:90%;}
+    .demo-send-row{display:flex;justify-content:flex-end;}
+    .demo-send-btn{background:var(--teal);color:#fff;border:none;border-radius:5px;padding:9px 20px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:background .18s;}
+    .demo-send-btn:hover:not(:disabled){background:var(--blue);}
+    .demo-send-btn:disabled{opacity:.45;cursor:default;}
+    .demo-a-bubble{align-self:flex-start;background:#fff;border:1px solid var(--line);border-radius:4px 12px 12px 12px;padding:12px 16px;font-size:12px;line-height:1.85;color:var(--ink);max-width:100%;word-break:break-word;font-family:'JetBrains Mono',monospace;white-space:pre-wrap;}
+    .demo-answer-span{border-radius:3px;padding:0 3px;}
+    @keyframes layPulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.4);opacity:.6;}}
+    .demo-lay-chip{display:inline-block;font-size:10.5px;font-family:'JetBrains Mono',monospace;vertical-align:middle;margin:0 1px;cursor:default;animation:layPulse .5s ease 2;font-weight:700;border-radius:3px;padding:1px 4px;}
+    .demo-legend-row{display:flex;flex-wrap:wrap;gap:10px;padding-top:10px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);}
+    .demo-legend-item{display:flex;align-items:center;gap:5px;}
+    .demo-legend-dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex-shrink:0;}
+    .demo-reset-wrap{display:flex;}
+    .demo-reset-btn{background:transparent;color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .18s;}
+    .demo-reset-btn:hover{border-color:var(--teal);color:var(--teal);}
+    @media(max-width:768px){.demo-panel{grid-template-columns:1fr;}}
+  </style>
 </head>
 
 <body>
@@ -372,6 +403,44 @@
       <span class="tag is-light">Open-Vocabulary Layout</span>
       <span class="tag is-light">Hierarchical Segmentation</span>
       <span class="tag is-light">Promptable Control</span>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="demo">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Interactive Demo</h2>
+    <p class="has-text-centered result-note" style="margin-bottom:2rem;">
+      Watch DocLayout-VL generate a structured layout tree in real time. Each <code>[LAY]</code> token is linked to a
+      pixel-accurate mask that is revealed on the document image as the model streams its output.
+    </p>
+
+    <div class="demo-tabs" id="demo-tabs">
+      <button class="demo-tab is-active" data-ex="task_a">Task A</button>
+      <button class="demo-tab" data-ex="task_b1">Task B1</button>
+      <button class="demo-tab" data-ex="task_b2">Task B2</button>
+      <button class="demo-tab" data-ex="task_c">Task C</button>
+      <button class="demo-tab" data-ex="task_d1">Task D1</button>
+      <button class="demo-tab" data-ex="task_d2">Task D2</button>
+    </div>
+
+    <div class="demo-panel">
+      <div class="demo-img-panel">
+        <div class="demo-img-container" id="demo-img-container">
+          <img id="demo-doc-img" src="" alt="Document image">
+        </div>
+      </div>
+      <div class="demo-chat-panel">
+        <div class="demo-q-bubble" id="demo-q-bubble"></div>
+        <div class="demo-send-row">
+          <button class="demo-send-btn" id="demo-send-btn">Send →</button>
+        </div>
+        <div class="demo-a-bubble" id="demo-a-bubble" style="display:none;"></div>
+        <div class="demo-legend-row" id="demo-legend-row" style="display:none;"></div>
+        <div class="demo-reset-wrap" id="demo-reset-wrap" style="display:none;">
+          <button class="demo-reset-btn" id="demo-reset-btn">↩ Reset</button>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -815,5 +884,371 @@
     window.addEventListener('scroll', updateNavbar, { passive: true });
   });
 </script>
+
+
+<script>
+/* ── DocLayout-VL Interactive Demo ── */
+(function(){
+  'use strict';
+
+  const DC=[
+    {fill:'rgba(21,149,143,.18)',fillBright:'rgba(21,149,143,.55)',border:'#15958f',text:'#0b7f79'},
+    {fill:'rgba(23,111,138,.18)',fillBright:'rgba(23,111,138,.55)',border:'#176f8a',text:'#125e7b'},
+    {fill:'rgba(245,166,35,.18)',fillBright:'rgba(245,166,35,.55)',border:'#e09610',text:'#9a6a00'},
+    {fill:'rgba(168,85,247,.18)',fillBright:'rgba(168,85,247,.55)',border:'#a855f7',text:'#7822c4'},
+    {fill:'rgba(255,107,53,.18)',fillBright:'rgba(255,107,53,.55)',border:'#e05520',text:'#b03a10'},
+    {fill:'rgba(72,199,142,.18)',fillBright:'rgba(72,199,142,.55)',border:'#2eaa78',text:'#1e8a5e'},
+  ];
+
+  const DE=[
+    /* ── Example A: Layout as Segmentation ── */
+    {
+      id:'task_a',label:'Task A',image:'static/examples/Task_A.png',
+      question:'Generate mask-based layout segmentation of all semantic regions.',
+      /* ── Task A: task_a ── */
+      spans:[
+        {label:'article_title',                   masks:[{points:[[1.9,7.7],[1.6,5.1],[49.1,5.1],[49.4,7.8],[39.3,7.8],[38.4,7.8],[38,7.8],[36.8,7.9],[24.6,7.8],[22.7,7.8],[21.8,7.8],[19,7.8],[8.9,7.8],[3.7,7.8],[1.9,7.8]]}]},
+        {label:'article_subtitle',                masks:[{points:[[1.9,13.3],[1.9,11.1],[1.9,10],[3.7,10],[37.7,9.9],[37.7,11.8],[28.5,11.7],[28.5,13.7],[16.3,14],[16.9,15.7],[16,16.3],[14.4,16.1],[1.6,16.3],[1.3,12.6],[1.6,12.3]]}]},
+        {label:'section-header',                  masks:[{points:[[81.3,21.8],[81,23],[78.8,23.1],[76.7,23.6],[78.2,24.6],[81.3,24.6],[87.1,24.6],[92,24.7],[95.7,24.7],[96,23.8],[96.3,22.4],[94.4,22.2],[88.6,22.1],[85.3,22.1],[83.1,22.1],[81,21.9]]}]},
+        {label:'section-text',                    masks:[{points:[[70.8,25.6],[70.8,24.9],[72.7,24.9],[76.4,24.9],[83.1,24.9],[89.8,25],[94.8,25],[96,25],[95.7,27.9],[96,31],[95.7,35.3],[95.7,42.1],[93.5,42.3],[92,42.4],[90.8,42.1],[89.2,41.2],[87.4,40.9],[86.5,39.7],[84.3,39.5],[83.7,38.4],[81.3,37.7],[79.4,36.9],[76.4,36.9],[74.8,35.1],[73.9,33.5],[68.7,32.9],[68.1,32],[67.5,30.5],[63.2,30.1],[60.7,28],[61.6,27.1],[64.4,27.1],[64.4,26.1],[68.4,26.1]]}]},
+        {label:'image_region',                    masks:[{points:[[58,27.9],[61,26.1],[64.1,25.2],[67.8,24.1],[73.6,22.5],[81,21.2],[91.4,20],[98.7,19.4],[99.7,19.1],[99.7,11.7],[99.7,1.6],[87.4,2.2],[78.2,3.5],[69.9,4.2],[62.9,5],[56.1,6.3],[51.5,7.8],[45.7,10],[41.1,12],[35.9,13.6],[31.9,15.5],[34.4,16.7],[39.6,18.6],[43.3,20.9],[49.1,23.6],[55.2,26.7]]}]},
+        {label:'section-header',                  masks:[{points:[[58,30.7],[62.6,30.7],[62.6,33.1],[64.4,33.2],[65,34.4],[63.2,34.7],[50.9,34.7],[50.9,33.1],[53.1,32.9],[53.4,31.7],[54.3,31.7],[54.6,30.4]]}]},
+        {label:'section-text',                    masks:[{points:[[49.4,35.3],[47.5,36.9],[46.6,38.3],[44.8,39.9],[44.2,41.4],[42.9,43.2],[42.3,44.9],[42,46.9],[48.5,47],[56.4,47],[64.4,47],[70.2,47.2],[70.5,45.8],[73.3,45.8],[84,45.8],[86.8,45.8],[86.8,43.8],[83.4,42.9],[82.2,41.4],[77.6,41.2],[77.3,38.9],[75.4,38.7],[74.5,37.4],[72.4,37.4],[72.7,36.2],[70.8,35.9],[70.2,34.7],[64.7,35],[55.8,35.1],[51.5,35]]}]},
+        {label:'image_region',                    masks:[{points:[[26.4,18.1],[19.3,22.4],[8.6,32.8],[4.9,38.7],[4.3,40.3],[4,43.5],[3.4,47.2],[3.4,48.5],[19.7,48.7],[38.4,48.5],[41.1,48.5],[40.8,47.2],[40.5,45.4],[41.7,42],[42.6,39.5],[45.4,37.1],[47.5,34.5],[50,32.2],[53.7,30.7],[55.8,29.2],[56.4,27.7],[44.2,22.4],[40.8,20.6],[31.3,16.4],[29.8,16]]}]},
+        {label:'section-header',                  masks:[{points:[[41.1,50.4],[41.1,49.3],[52.1,49.4],[70.5,49.6],[92.3,49.4],[92.6,49.6],[92.6,49.9],[92.9,50.3],[91.7,50.6],[67.8,50.9],[42.3,50.9],[41.1,50.9]]}]},
+        {label:'section-text',                    masks:[{points:[[41.7,51],[61.6,51.2],[86.8,51.3],[87.1,52.1],[86.8,52.8],[85.3,53.7],[83.7,53.7],[83.4,54.9],[82.5,56.2],[80.3,56.2],[79.4,57.3],[73,57.7],[72.4,59.2],[70.5,61.3],[67.8,63.2],[64.4,63.2],[62.9,64.6],[60.7,66.5],[57.4,67.5],[54,66.6],[50.9,64.9],[48.5,62],[45.4,59.5],[44.2,56.8],[42,53]]}]},
+        {label:'image_region',                    masks:[{points:[[39.9,48.8],[2.8,49],[3.7,51.9],[4.3,55.2],[5.6,58.3],[6.2,60.7],[9.8,65],[15.4,71.4],[21.2,75.9],[26.7,79],[31.6,81.6],[41.4,76.6],[48.2,73.3],[53.4,71],[57.1,69.2],[48.5,63.5],[44.5,59.5],[41.7,55.3],[40.8,51.9]]}]},
+        {label:'section-header',                  masks:[{points:[[89.2,54.8],[89.2,53.6],[93.8,53.6],[95.4,53.9],[95.4,54.9],[95.4,57.4],[95.4,58.8],[90.5,59.1],[84,59.2],[81.6,58.6],[81.9,57.7],[83.1,57.7],[84.6,57.6],[84.6,56.4],[85.9,56.4],[88.6,56.4],[88.6,55.5]]}]},
+        {label:'section-text',                    masks:[{points:[[82.2,59.4],[81.9,60],[80,60.5],[77.9,60.5],[75.7,60.7],[75.7,61.6],[76.7,62.2],[76.7,62.8],[75.4,63.2],[73,63.4],[70.8,63.4],[71.2,64.1],[69.6,64.9],[67.8,64.9],[67.2,65.3],[67.2,66.8],[65.3,67.4],[63.8,67.8],[62.6,68.7],[62,69.9],[66.9,70.1],[67.5,71],[68.7,71.4],[68.7,72.6],[71.5,72.9],[75.7,72.9],[75.7,74.2],[77.9,74.1],[81,74.1],[81.9,75],[83.7,75.7],[89.2,75.7],[94.8,75.7],[95.7,73.8],[95.7,69.2],[95.4,64.9],[95.4,60.8],[95.4,59.2],[86.2,59.4]]}]},
+        {label:'image_region',                    masks:[{points:[[58,69.2],[61,71],[63.5,71.7],[67.5,72.7],[70.8,73.8],[77.9,75.3],[84.6,76.7],[93.8,77.2],[99,77.5],[99.7,77.9],[99.7,80.6],[99.4,90],[99.7,95.5],[92.9,95.6],[87.1,95.2],[79.1,94.6],[70.2,93.4],[63.8,92.1],[56.4,90.6],[48.2,88.2],[43.9,86.8],[38,84.6],[33.1,82.5],[31.3,81.8],[40.2,77.8],[50.9,72.6]]}]},
+        {label:'article_caption',                 masks:[{points:[[1.6,84.3],[9.8,84.3],[19.7,84.3],[22.1,84.3],[22.1,85.4],[25.2,85.5],[35.6,85.7],[35.6,87.4],[34.4,87.1],[34.7,88.2],[36.5,88.2],[36.8,89.1],[38,90.3],[37.1,91.3],[34.4,91.3],[34.4,92.2],[36.2,92.5],[39,93.4],[35.6,94],[24.3,94.1],[23.6,95.5],[5.2,95.3],[1.6,95.2],[1.6,87.1]]}]},
+        {label:'page_number',                     masks:[{points:[[90.8,96.1],[91.7,96.2],[92,97.3],[90.2,97.5],[89.5,96.7]]}]},
+      ],
+      tokens:[
+        {type:'span_start',spanIndex:0},{type:'text',content:'article_title'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:0},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:1},{type:'text',content:'article_subtitle'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:1},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:2},{type:'text',content:'section-header'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:2},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:3},{type:'text',content:'section-text'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:3},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:4},{type:'text',content:'image_region'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:4},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:5},{type:'text',content:'section-header'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:5},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:6},{type:'text',content:'section-text'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:6},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:7},{type:'text',content:'image_region'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:7},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:8},{type:'text',content:'section-header'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:8},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:9},{type:'text',content:'section-text'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:9},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:10},{type:'text',content:'image_region'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:10},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:11},{type:'text',content:'section-header'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:11},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:12},{type:'text',content:'section-text'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:12},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:13},{type:'text',content:'image_region'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:13},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:14},{type:'text',content:'article_caption'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:14},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:15},{type:'text',content:'page_number'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:15},
+      ]
+    },
+    /* ── Example B1: Open-Set Layout Segmentation (Generic Ontology) ── */
+    {
+      id:'task_b1',label:'Task B1',image:'static/examples/Task_B1.png',
+      question:'Segment the document into the following layout classes: picture, header, title, section header, table, table header',
+      /* ── Task B1: task_b1 ── */
+      spans:[
+        {label:'header',                          masks:[{points:[[6.1,6.8],[6.1,2.9],[92.6,3],[92.8,9.3],[5.9,9.4]]}]},
+        {label:'picture',                         masks:[{points:[[7.4,3.8],[12,3.9],[15.9,3.9],[19.5,3.9],[21.1,3.5],[21.4,4.7],[25.5,4.8],[31.8,4.4],[31.8,5.3],[31.8,7.2],[31.2,9],[18.6,8.7],[9.7,9],[7.8,9],[7.1,7.5],[7.2,5.9],[7.8,5.1],[8.8,3.9]]}]},
+        {label:'picture',                         masks:[{points:[[79.5,7.5],[80.1,6.3],[80.7,5.9],[80.9,4.7],[81.8,4.2],[85.5,3.9],[89.3,3.9],[91,4.2],[91.6,5.7],[91.6,6.9],[91.4,7.9],[89.5,8.2],[86.2,9],[84.5,9],[81.6,9],[81.2,8.8]]}]},
+        {label:'title',                           masks:[{points:[[32,10.5],[32,9.7],[32.4,8.8],[34.1,9],[39.1,9.1],[50.4,9.3],[67.3,9.3],[68.2,9.9],[68.4,11.7],[67.6,12.7],[57.3,12.6],[32.4,12.6],[31.4,12]]}]},
+        {label:'table',                           masks:[{points:[[6.9,12.7],[7.1,23.4],[92.8,23.6],[92.8,13],[14.3,12.7]]}]},
+        {label:'section header',                  masks:[{points:[[42.7,25.2],[42.7,24.4],[44.2,24.3],[46.7,24.3],[50.2,24.3],[53.3,24.3],[57.1,24.3],[58.2,24.7],[57.9,25.5],[55.6,25.5],[48.9,25.5],[45,25.5],[43.9,25.6]]}]},
+        {label:'table header',                    masks:[{points:[[6.9,27.6],[7.1,25.9],[12.2,26.1],[17.2,26.1],[25.7,26.2],[32.9,26.4],[35.4,26.4],[35.4,27.6],[30.6,27.7],[16.8,27.6],[10.1,27.7]]}]},
+        {label:'table',                           masks:[{points:[[7.2,28.2],[92.8,27.9],[92.9,50.3],[7.1,50.1],[7.1,35.6]]}]},
+        {label:'table header',                    masks:[{points:[[6.9,51.6],[7.4,50.3],[23.9,50.4],[33.9,50.7],[42.1,50.6],[50.6,50.6],[51,51.6],[36.4,51.9],[11.3,51.9]]}]},
+        {label:'table',                           masks:[{points:[[7.1,51.9],[92.6,51.9],[92.8,58.6],[6.9,58.9]]}]},
+        {label:'table header',                    masks:[{points:[[7.1,60.4],[7.2,58.9],[23.7,59.2],[23.9,60.5],[10.3,60.7]]}]},
+        {label:'table',                           masks:[{points:[[7.1,61.1],[92.8,61],[92.6,99.8],[7.1,99.8]]}]},
+      ],
+      tokens:[
+        {type:'span_start',spanIndex:0},{type:'text',content:'header'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:0},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:1},{type:'text',content:'picture'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:1},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:2},{type:'text',content:'picture'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:2},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:3},{type:'text',content:'title'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:3},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:4},{type:'text',content:'table'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:4},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:5},{type:'text',content:'section header'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:5},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:6},{type:'text',content:'table header'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:6},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:7},{type:'text',content:'table'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:7},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:8},{type:'text',content:'table header'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:8},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:9},{type:'text',content:'table'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:9},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:10},{type:'text',content:'table header'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:10},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:11},{type:'text',content:'table'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:11},
+      ]
+    },
+    /* ── Example B2: Open-Set Layout Segmentation (Domain-Specific Ontology) ── */
+    {
+      id:'task_b2',label:'Task B2',image:'static/examples/Task_B2.png',
+      question:'Segment the document into the following insurance-specific layout classes: bank logo, certification logo, insurer information block, schedule tile, policyholder details, covered members table, premium breakdown, legal clause, nominee information, regulatory info block, authorization signature',
+      /* ── Task B2: task_b2 ── */
+      spans:[
+        {label:'bank logo',                       masks:[{points:[[7.1,7.8],[7.1,6],[7.8,4.4],[12,4.4],[18.4,4.4],[19.5,3.3],[21.4,3.8],[27.2,4.7],[31.4,4.5],[31.6,6.8],[31.6,8.8],[22.2,9],[9.5,9.1]]}]},
+        {label:'certification logo',              masks:[{points:[[79.7,7.4],[80.3,5.9],[81.2,4.1],[84.5,4.1],[88.9,3.6],[92.2,4.2],[92,5.7],[91.6,7.4],[87.2,9.1],[84.3,9.1],[81.1,8.8]]}]},
+        {label:'insurer information block',       masks:[{points:[[32,12.1],[32,10],[32,8.7],[45.6,8.7],[56.1,8.7],[65.3,9],[67.8,9],[68.2,9.6],[68.2,10.9],[68.4,12.4],[92.8,12.3],[92.9,23.8],[6.9,23.7],[7.1,12.9]]}]},
+        {label:'schedule tile',                   masks:[{points:[[42.5,25.3],[42.5,24.3],[57.9,24.3],[57.9,25.5],[50.4,25.8],[44.8,25.6]]}]},
+        {label:'policyholder details',            masks:[{points:[[6.9,27.6],[6.9,25.9],[35.6,26.2],[35.6,27.7],[92.6,27.9],[92.6,50.3],[6.9,50.3],[7.1,30.2]]}]},
+        {label:'nominee information',             masks:[{points:[[7.2,46.6],[38.7,46.7],[63,46.7],[76.5,46.4],[89.5,46.7],[92.9,46.3],[92.4,50.1],[63.4,50.3],[40.6,50],[18.2,50],[6.5,50]]}]},
+        {label:'covered members table',             masks:[{points:[[7.1,51.5],[7.2,50.4],[50.8,50.6],[51.2,52.1],[92.6,52.1],[92.9,58.8],[6.7,59.1]]}]},
+        {label:'premium breakdown',           masks:[{points:[[6.9,60.4],[6.9,59.2],[24.3,59.2],[24.3,60.7],[92.8,60.8],[92.9,68.4],[6.9,68.4],[6.9,63.7]]}]},
+        {label:'regulatory info block',               masks:[{points:[[7.1,68.9],[92.9,69],[92.8,81.6],[7.1,81.5]]}]},
+        {label:'authorization signature',    masks:[{points:[[9.5,78.7],[9.9,78.2],[10.5,77.3],[10.5,76.6],[10.7,75.9],[11.9,75.6],[12.8,76.2],[12.6,77],[13.4,77.2],[14.2,78.1],[13.8,78.8],[12.6,79],[10.9,79.6],[10.3,79.6]]}]},       
+        {label:'legal clause',         masks:[{points:[[7.2,81.8],[56.5,82.1],[80.1,82.2],[92.9,82.2],[92.8,99.8],[90.3,99.3],[88,98.6],[78,98.4],[59.4,98.3],[43.1,98.1],[41.6,98.3],[41.8,99.6],[7.1,99.9],[7.1,85.1]]}]},
+      ],
+      tokens:[
+        {type:'span_start',spanIndex:0},{type:'text',content:'bank logo'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:0},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:1},{type:'text',content:'certification logo'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:1},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:2},{type:'text',content:'insurer information block'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:2},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:3},{type:'text',content:'schedule tile'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:3},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:4},{type:'text',content:'policyholder details'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:4},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:5},{type:'text',content:'nominee information'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:5},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:6},{type:'text',content:'covered members table'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:6},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:7},{type:'text',content:'premium breakdown'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:7},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:8},{type:'text',content:'regulatory info block'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:8},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:9},{type:'text',content:'authorization signature'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:9},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:10},{type:'text',content:'legal clause'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:10},
+      ]
+    },
+    /* ── Example C: Hierarchical Layout Segmentation ── */
+    {
+      id:'task_c',label:'Task C',image:'static/examples/Task_C.png',
+      question:'Semantically and hierarchically segment this mutual fund factsheet into a layout with exactly three top-level regions: header, body, and footer, so that a new investor can quickly grasp the document\'s structure.',
+      /* ── Task C: task_c ── */
+      spans:[
+        {label:'fund-title',                      masks:[{points:[[15.2,3.3],[15.2,1.4],[18.9,1.4],[22.5,1.3],[27,1.3],[30.4,1.3],[30.8,2.9],[30.8,5],[41,4.7],[45.8,4.7],[50.8,4.7],[51.7,5.1],[51.1,7.4],[41,7.4],[25.6,7.7],[16.1,7.7],[15.1,6.8],[15.1,5.3]]}]},
+        {label:'sub-title',                       masks:[{points:[[15.4,10],[16,9],[17.2,9.3],[21.6,9.3],[35,9.3],[47,9.1],[50.3,9.1],[50.4,11.1],[28.8,11.2],[16.1,11.2]]}]},
+        {label:'issue-data-strip',                masks:[{points:[[68.2,0.1],[68.2,2.2],[68.2,5.3],[75.7,5.3],[96.8,5.3],[99.4,5.1],[99.4,0.2],[72.2,0]]}]},
+        {label:'logo',                            masks:[{points:[[3.1,6.3],[3.2,5],[4.2,4.1],[5.5,3.6],[5.2,2.2],[6.1,1],[7.3,1.1],[7.5,2.6],[7.6,4.5],[7.9,5.7],[9.9,5.7],[11,5],[10.9,3.2],[11.2,1.9],[12.7,1.9],[13.6,3],[13,4.2],[14.5,5],[15,7.4],[14.7,8.4],[14.3,9.6],[14.4,11.2],[12.8,11.8],[11,11.5],[11.2,10],[10.2,9.1],[9,7.9],[7.9,8.4],[7.3,9.3],[7.5,11.1],[5.6,11.8],[4.1,11.8],[3.8,10.2],[3.5,8.4],[2.3,7.2]]}]},
+        {label:'header',                          masks:[{points:[[0,0],[99.4,0],[99.3,11.8],[0.1,11.8]]}]},
+        {label:'fund-info-table',                 masks:[{points:[[3.8,12.9],[48,12.7],[48,97.4],[3.7,97.4],[3.7,20.3]]}]},
+        {label:'old-line-chart',                  masks:[{points:[[51.3,16.6],[95.8,16.6],[95.9,40.9],[51.3,40.8]]}]},
+        {label:'new-line-chart',                  masks:[{points:[[51.1,41.2],[95.9,41.8],[95.9,64.6],[51.6,64.7],[51.3,49.3]]}]},
+        {label:'source',                          masks:[{points:[[51.3,67.1],[51.3,66],[52.4,65.8],[53.2,66.2],[64,66.2],[64.3,66.9],[63.3,67.4],[53.7,67.4]]}]},
+        {label:'performance-section',             masks:[{points:[[50.4,12.7],[97,12.9],[96.5,66],[66.8,65.8],[65.4,67.8],[50.6,68]]}]},
+        {label:'asset-allocation-section',        masks:[{points:[[51.3,71.7],[95.9,72],[95.8,97.3],[51.3,97.1]]}]},
+        {label:'body',                            masks:[{points:[[1.7,12.6],[98.2,12.6],[96.9,97.3],[3,97.1]]}]},
+        {label:'page-number',                     masks:[{points:[[92.5,98],[92.4,99.6],[93.8,99.6],[94.2,98.1]]}]},
+        {label:'footer',                          masks:[{points:[[0,97.4],[99.3,97.7],[99.3,99.8],[0,99.9]]}]},
+      ],
+      tokens:[
+        {type:'text',content:'<document>\n  <header>\n    '},
+        {type:'span_start',spanIndex:0},{type:'text',content:'fund-title'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:0},
+        {type:'text',content:'\n    '},
+        {type:'span_start',spanIndex:1},{type:'text',content:'sub-title'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:1},
+        {type:'text',content:'\n    '},
+        {type:'span_start',spanIndex:2},{type:'text',content:'issue-data-strip'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:2},
+        {type:'text',content:'\n    '},
+        {type:'span_start',spanIndex:3},{type:'text',content:'logo'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:3},
+        {type:'text',content:'\n  '},
+        {type:'span_start',spanIndex:4},{type:'text',content:'</header>'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:4},
+        {type:'text',content:'\n  <body>\n    '},
+        {type:'span_start',spanIndex:5},{type:'text',content:'fund-info-table'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:5},
+        {type:'text',content:'\n    <performance-section>\n      '},
+        {type:'span_start',spanIndex:6},{type:'text',content:'old-line-chart'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:6},
+        {type:'text',content:'\n      '},
+        {type:'span_start',spanIndex:7},{type:'text',content:'new-line-chart'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:7},
+        {type:'text',content:'\n      '},
+        {type:'span_start',spanIndex:8},{type:'text',content:'source'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:8},
+        {type:'text',content:'\n    '},
+        {type:'span_start',spanIndex:9},{type:'text',content:'</performance-section>'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:9},
+        {type:'text',content:'\n    '},
+        {type:'span_start',spanIndex:10},{type:'text',content:'asset-allocation-section'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:10},
+        {type:'text',content:'\n  '},
+        {type:'span_start',spanIndex:11},{type:'text',content:'</body>'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:11},
+        {type:'text',content:'\n  <footer>\n    '},
+        {type:'span_start',spanIndex:12},{type:'text',content:'page-number'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:12},
+        {type:'text',content:'\n  '},
+        {type:'span_start',spanIndex:13},{type:'text',content:'</footer>'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:13},
+        {type:'text',content:'\n</document>'},
+      ]
+    },
+    /* ── Example D1: Promptable Layout Understanding (Targeted Extraction) ── */
+    {
+      id:'task_d1',label:'Task D1',image:'static/examples/Task_D1.webp',
+      question:'Mask all personal identifiable information of the passport holder',
+      /* ── Task D1: task_d1 ── */
+      spans:[
+        {label:'photo',                           masks:[{points:[[5.2,75.7],[5.7,55.9],[33.5,55.9],[34.2,55.8],[33.7,76.3],[6.9,76.3]]}]},
+        {label:'signature',                       masks:[{points:[[7.6,81.8],[8.6,81.4],[9.2,79],[13.9,78.5],[18.1,79.4],[20,79.9],[20,77.8],[22.5,77.8],[23.2,79.9],[27.8,80.2],[31,80.2],[32.7,80.9],[33.5,82.8],[35.2,83.6],[38.4,83.6],[38.6,84.8],[34.4,84.9],[34.8,86.6],[31.8,85.1],[26.3,85.1],[22.1,85.4],[18.3,83.6],[16,83.6],[12.8,84.3],[10.1,83.3]]}]},
+        {label:'passport_num',                    masks:[{points:[[77.5,60.3],[77.2,58.8],[92,58.8],[92,60.7],[79.4,60.8]]}]},
+        {label:'surname',                         masks:[{points:[[36.3,61.7],[36.3,60.8],[40.3,60.8],[40.7,61.9],[39.9,62.3],[38,62.3]]}]},
+        {label:'given_name',                      masks:[{points:[[36.1,66.3],[36.1,65],[43.7,64.9],[43,66.8],[37.1,66.6]]}]},
+        {label:'sex',                             masks:[{points:[[67.7,71],[67.5,69.8],[69.4,69.8],[70.3,69.8],[70.3,71],[69.4,71.8],[68.2,71.7]]}]},
+        {label:'date_of_birth',                   masks:[{points:[[78.7,71.1],[78.5,69.5],[83.4,69.3],[92.4,69.5],[97.1,69.5],[97.1,71.5],[90.1,71.5],[78.7,71.7]]}]},
+        {label:'nationality',                     masks:[{points:[[39,70.7],[39,69.3],[50,69.2],[49.8,71],[41.1,71.1]]}]},
+        {label:'place_of_birth',                  masks:[{points:[[36.1,75.3],[36.1,73.6],[54.6,73.9],[55.3,74.7],[55.3,75.7],[41.8,75.6],[35.9,75.6]]}]},
+        {label:'place_of_issue',                  masks:[{points:[[46.6,80],[46.4,78.5],[60.1,78.4],[60.3,80.3],[48.1,80.5]]}]},
+        {label:'date_of_issue',                   masks:[{points:[[46.6,84.8],[46.4,83.4],[48.7,82.8],[57.4,83],[66.5,83],[66.9,83.9],[66.7,85.4],[46.4,85.4]]}]},
+        {label:'date_of_expiry',                  masks:[{points:[[75.8,84.8],[75.8,83],[89.3,83],[94.3,83.1],[94.6,85.2],[83.4,85.5],[76.2,85.4]]}]},
+        {label:'mrz_block',                       masks:[{points:[[3.8,90],[64.6,90.1],[93.9,90],[93.9,93.1],[94.8,93.1],[95,94.6],[94.3,95.6],[59.7,95.3],[33.5,95.2],[13.9,95.3],[4,95.6],[3.8,92.2]]}]},
+      ],
+      tokens:[
+        {type:'span_start',spanIndex:0},{type:'text',content:'photo'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:0},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:1},{type:'text',content:'signature'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:1},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:2},{type:'text',content:'passport_num'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:2},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:3},{type:'text',content:'surname'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:3},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:4},{type:'text',content:'given_name'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:4},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:5},{type:'text',content:'sex'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:5},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:6},{type:'text',content:'date_of_birth'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:6},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:7},{type:'text',content:'nationality'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:7},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:8},{type:'text',content:'place_of_birth'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:8},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:9},{type:'text',content:'place_of_issue'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:9},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:10},{type:'text',content:'date_of_issue'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:10},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:11},{type:'text',content:'date_of_expiry'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:11},{type:'text',content:'\n'},
+        {type:'span_start',spanIndex:12},{type:'text',content:'mrz_block'},{type:'span_end'},{type:'text',content:' '},{type:'lay',spanIndex:12},
+      ]
+    },
+    /* ── Example D2: Promptable Layout Understanding (Spatial Reasoning) ── */
+    {
+      id:'task_d2',label:'Task D2',image:'static/examples/Tasl_D2.jpg',
+      question:'Find the figure to the left of a table',
+      /* ── Task D2: task_d2 ── */
+      spans:[
+        {label:'Figure 2',  masks:[{points:[[15,31.6],[14.8,30.4],[10.6,30.2],[9,29.9],[8.9,26.2],[9.2,23.6],[8.9,20],[8.9,14.8],[8.7,12.7],[16.2,12.9],[29.2,12.9],[41.5,12.6],[47.5,12.7],[47.3,20],[47.1,20.4],[47.5,21.5],[47.5,30.1],[41.2,30.1],[41.3,31.3],[41.2,31.9],[38.1,31.7],[15.4,32]]}]},
+      ],
+      tokens:[
+        {type:'text',content:'This document utilizes a two-column format containing a total of two figures and two tables. Specifically, Figure 2 (“The installed instrumentation”) is the only figure positioned to the left of a table, which is Table 1 (“Accelerations measured on the inner frame”).\n\nFinal Answer: '},
+        {type:'span_start',spanIndex:0},{type:'text',content:'Figure 2'},{type:'span_end'},
+        {type:'text',content:' '},{type:'lay',spanIndex:0},
+      ]
+    },
+  ];
+
+  let activeEx=DE[0],streamIv=null,hlDivs=[],revealedSet=new Set(),svgOl=null;
+  const imgEl    = document.getElementById('demo-doc-img');
+  const imgC     = document.getElementById('demo-img-container');
+  const qBubble  = document.getElementById('demo-q-bubble');
+  const aBubble  = document.getElementById('demo-a-bubble');
+  const sendBtn  = document.getElementById('demo-send-btn');
+  const resetWrap= document.getElementById('demo-reset-wrap');
+  const resetBtn = document.getElementById('demo-reset-btn');
+  const legendRow= document.getElementById('demo-legend-row');
+
+  function loadEx(ex){
+    if(streamIv){clearInterval(streamIv);streamIv=null;}
+    activeEx=ex; revealedSet=new Set();
+    imgEl.src=ex.image;
+    qBubble.textContent=ex.question;
+    aBubble.innerHTML=''; aBubble.style.display='none';
+    legendRow.innerHTML=''; legendRow.style.display='none';
+    resetWrap.style.display='none';
+    sendBtn.disabled=false; sendBtn.style.opacity='';
+    hlDivs.forEach(a=>a.forEach(d=>d.remove())); hlDivs=[];
+    if(svgOl){svgOl.remove();svgOl=null;}
+    svgOl=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svgOl.style.cssText='position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;';
+    svgOl.setAttribute('viewBox','0 0 100 100');
+    svgOl.setAttribute('preserveAspectRatio','none');
+    imgC.appendChild(svgOl);
+    ex.spans.forEach((span,i)=>{
+      const c=DC[i%DC.length];
+      const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+      g.setAttribute('class','demo-hl-poly');
+      span.masks.forEach(mask=>{
+        const poly=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+        poly.setAttribute('points',mask.points.map(p=>p.join(',')).join(' '));
+        poly.setAttribute('fill',c.fill);
+        poly.setAttribute('stroke','none');
+        g.appendChild(poly);
+      });
+      svgOl.appendChild(g);
+      hlDivs.push([g]);
+    });
+  }
+
+  function revealHL(si){
+    const a=hlDivs[si]; if(!a) return;
+    revealedSet.add(si);
+    a.forEach(d=>{d.classList.remove('sweeping');});
+    a[0]&&a[0].getBoundingClientRect();
+    a.forEach(d=>d.classList.add('sweeping'));
+  }
+
+  function popHL(si){
+    const a=hlDivs[si]; if(!a) return;
+    const c=DC[si%DC.length];
+    a.forEach(d=>{
+      const polys=d.querySelectorAll('polygon');
+      polys.forEach(p=>{
+        p.setAttribute('fill',c.fillBright);
+      });
+      setTimeout(()=>{
+        polys.forEach(p=>{
+          p.setAttribute('fill',c.fill);
+        });
+      },380);
+    });
+  }
+
+  function toggleHL(si){
+    if(!revealedSet.has(si)){revealHL(si);}else{popHL(si);}
+  }
+
+  function flatTokens(tokens){
+    const evs=[];let inSpan=null;
+    for(const t of tokens){
+      if(t.type==='text'){for(const ch of t.content)evs.push({type:'char',char:ch,spanIndex:inSpan});}
+      else if(t.type==='span_start'){inSpan=t.spanIndex;}
+      else if(t.type==='span_end'){inSpan=null;evs.push({type:'span_end'});}
+      else if(t.type==='lay'){evs.push({type:'lay',spanIndex:t.spanIndex});}
+    }
+    return evs;
+  }
+
+  function showLegend(){
+    resetWrap.style.display='';
+  }
+
+  function startStream(){
+    sendBtn.disabled=true; sendBtn.style.opacity='.45';
+    aBubble.innerHTML=''; aBubble.style.display='';
+    const evs=flatTokens(activeEx.tokens);
+    let idx=0,curSpanEl=null,curSpanIdx=null,plainEl=null;
+    streamIv=setInterval(()=>{
+      if(idx>=evs.length){clearInterval(streamIv);streamIv=null;showLegend();return;}
+      const ev=evs[idx++];
+      if(ev.type==='char'){
+        if(ev.spanIndex!==null){
+          if(!curSpanEl||curSpanIdx!==ev.spanIndex){
+            curSpanEl=document.createElement('span'); curSpanEl.className='demo-answer-span';
+            const c=DC[ev.spanIndex%DC.length];
+            curSpanEl.style.cssText='background:'+c.fill+';color:'+c.text+';border-radius:3px;padding:0 3px;';
+            aBubble.appendChild(curSpanEl); curSpanIdx=ev.spanIndex; plainEl=null;
+          }
+          curSpanEl.appendChild(document.createTextNode(ev.char));
+        } else {
+          if(curSpanIdx!==null){curSpanEl=null;curSpanIdx=null;plainEl=null;}
+          if(!plainEl){plainEl=document.createElement('span');aBubble.appendChild(plainEl);}
+          plainEl.appendChild(document.createTextNode(ev.char));
+        }
+      } else if(ev.type==='span_end'){
+        curSpanEl=null;curSpanIdx=null;plainEl=null;
+      } else if(ev.type==='lay'){
+        const c=DC[ev.spanIndex%DC.length];
+        const chip=document.createElement('span'); chip.className='demo-lay-chip';
+        chip.style.cssText='color:'+c.text+';background:'+c.fill+';border:1px solid '+c.border+';cursor:pointer;';
+        chip.textContent='[LAY]';
+        const si=ev.spanIndex;
+        chip.addEventListener('click',()=>toggleHL(si));
+        aBubble.appendChild(chip); plainEl=null; curSpanEl=null; curSpanIdx=null;
+        revealHL(si);
+      }
+    },25);
+  }
+
+  document.querySelectorAll('.demo-tab').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.demo-tab').forEach(b=>b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+      const ex=DE.find(e=>e.id===btn.dataset.ex);
+      if(ex) loadEx(ex);
+    });
+  });
+  sendBtn.addEventListener('click',()=>startStream());
+  resetBtn.addEventListener('click',()=>loadEx(activeEx));
+  loadEx(DE[0]);
+})();
+</script>
+
 </body>
 </html>
