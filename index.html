@@ -166,10 +166,15 @@
   </style>
   <style>
     /* ── Interactive Demo ── */
-    .demo-tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:28px;}
+    .demo-tabs-wrapper{margin-bottom:28px;}
+    .demo-tabs{display:flex;gap:8px;justify-content:center;margin-bottom:0;}
     .demo-tab{background:transparent;border:1px solid var(--line);border-radius:999px;padding:7px 20px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;font-family:'Inter',sans-serif;transition:all .18s;}
     .demo-tab:hover{border-color:var(--teal);color:var(--teal);background:rgba(21,149,143,.06);}
     .demo-tab.is-active{background:var(--teal);border-color:var(--teal);color:#fff;}
+    .demo-subtabs{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:10px;padding:10px 0 0;border-top:1px dashed var(--line);}
+    .demo-subtab{background:transparent;border:1px dashed var(--line);border-radius:999px;padding:5px 16px;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;font-family:'Inter',sans-serif;transition:all .18s;}
+    .demo-subtab:hover{border-color:var(--teal);color:var(--teal);background:rgba(21,149,143,.06);}
+    .demo-subtab.is-active{background:rgba(21,149,143,.13);border-color:var(--teal);border-style:solid;color:var(--teal);font-weight:600;}
     .demo-panel{display:grid;grid-template-columns:60fr 40fr;gap:28px;align-items:start;}
     .demo-img-panel{display:flex;flex-direction:column;gap:14px;}
     .demo-img-container{position:relative;width:100%;border-radius:6px;overflow:hidden;border:1px solid var(--line);background:var(--soft);}
@@ -193,6 +198,9 @@
     .demo-reset-wrap{display:flex;}
     .demo-reset-btn{background:transparent;color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .18s;}
     .demo-reset-btn:hover{border-color:var(--teal);color:var(--teal);}
+    .demo-logos-row{margin-top:auto;display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:7px 12px;border:1px solid var(--line);border-radius:5px;background:var(--soft);}
+    .demo-logos-row img{height:50px;width:auto;object-fit:contain;display:block;}
+    .demo-logo-text{font-size:12px;font-weight:700;color:var(--teal);font-family:'Inter',sans-serif;white-space:nowrap;letter-spacing:.01em;}
     @media(max-width:768px){.demo-panel{grid-template-columns:1fr;}}
   </style>
 </head>
@@ -415,19 +423,30 @@
       pixel-accurate mask that is revealed on the document image as the model streams its output.
     </p>
 
-    <div class="demo-tabs" id="demo-tabs">
-      <button class="demo-tab is-active" data-ex="task_a">Task A</button>
-      <button class="demo-tab" data-ex="task_b1">Task B1</button>
-      <button class="demo-tab" data-ex="task_b2">Task B2</button>
-      <button class="demo-tab" data-ex="task_c">Task C</button>
-      <button class="demo-tab" data-ex="task_d1">Task D1</button>
-      <button class="demo-tab" data-ex="task_d2">Task D2</button>
+    <div class="demo-tabs-wrapper">
+      <div class="demo-tabs" id="demo-tabs">
+        <button class="demo-tab is-active" data-ex="task_a">Layout as Segmentation</button>
+        <button class="demo-tab demo-tab-parent" data-group="b" data-ex="task_b1">Open-Set Layout Segmentation</button>
+        <button class="demo-tab" data-ex="task_c">Hierarchical Layout Segmentation</button>
+        <button class="demo-tab demo-tab-parent" data-group="d" data-ex="task_d1">Promptable Layout Understanding</button>
+      </div>
+      <div class="demo-subtabs" id="demo-subtabs-b" style="display:none;">
+        <button class="demo-subtab is-active" data-ex="task_b1">Generic Ontology</button>
+        <button class="demo-subtab" data-ex="task_b2">Domain-Specific Ontology</button>
+      </div>
+      <div class="demo-subtabs" id="demo-subtabs-d" style="display:none;">
+        <button class="demo-subtab is-active" data-ex="task_d1">Targeted Extraction</button>
+        <button class="demo-subtab" data-ex="task_d2">Spatial Reasoning</button>
+      </div>
     </div>
 
     <div class="demo-panel">
       <div class="demo-img-panel">
         <div class="demo-img-container" id="demo-img-container">
           <img id="demo-doc-img" src="" alt="Document image">
+        </div>
+        <div id="demo-tree-img-wrap" style="display:none;margin-top:1rem;opacity:0;transition:opacity .5s ease;">
+          <img src="static/examples/Task_C_tree.jpeg" alt="Hierarchical layout tree" style="width:100%;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,.12);">
         </div>
       </div>
       <div class="demo-chat-panel">
@@ -439,6 +458,11 @@
         <div class="demo-legend-row" id="demo-legend-row" style="display:none;"></div>
         <div class="demo-reset-wrap" id="demo-reset-wrap" style="display:none;">
           <button class="demo-reset-btn" id="demo-reset-btn">↩ Reset</button>
+        </div>
+        <div class="demo-logos-row">
+          <img src="static/images/logos/bharatgen_logo.png" alt="BharatGen">
+          <img src="static/images/logos/eccv_logo.png" alt="ECCV">
+          <span class="demo-logo-text">DocLayout-VL</span>
         </div>
       </div>
     </div>
@@ -903,7 +927,7 @@
   const DE=[
     /* ── Example A: Layout as Segmentation ── */
     {
-      id:'task_a',label:'Task A',image:'static/examples/Task_A.png',
+      id:'task_a',label:'Task A',image:'static/examples/Task_A.png',imgMaxWidth:'72%',
       question:'Generate mask-based layout segmentation of all semantic regions.',
       /* ── Task A: task_a ── */
       spans:[
@@ -1123,15 +1147,18 @@
   const resetWrap= document.getElementById('demo-reset-wrap');
   const resetBtn = document.getElementById('demo-reset-btn');
   const legendRow= document.getElementById('demo-legend-row');
+  const treeWrap = document.getElementById('demo-tree-img-wrap');
 
   function loadEx(ex){
     if(streamIv){clearInterval(streamIv);streamIv=null;}
     activeEx=ex; revealedSet=new Set();
     imgEl.src=ex.image;
+    imgC.style.maxWidth=ex.imgMaxWidth||'';
     qBubble.textContent=ex.question;
     aBubble.innerHTML=''; aBubble.style.display='none';
     legendRow.innerHTML=''; legendRow.style.display='none';
     resetWrap.style.display='none';
+    treeWrap.style.display='none'; treeWrap.style.opacity='0';
     sendBtn.disabled=false; sendBtn.style.opacity='';
     hlDivs.forEach(a=>a.forEach(d=>d.remove())); hlDivs=[];
     if(svgOl){svgOl.remove();svgOl=null;}
@@ -1197,6 +1224,10 @@
 
   function showLegend(){
     resetWrap.style.display='';
+    if(activeEx.id==='task_c'){
+      treeWrap.style.display='';
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{ treeWrap.style.opacity='1'; }));
+    }
   }
 
   function startStream(){
@@ -1240,10 +1271,27 @@
     btn.addEventListener('click',()=>{
       document.querySelectorAll('.demo-tab').forEach(b=>b.classList.remove('is-active'));
       btn.classList.add('is-active');
+      // Hide all subtab rows; show the one for this group if applicable
+      document.querySelectorAll('.demo-subtabs').forEach(s=>s.style.display='none');
+      if(btn.dataset.group){
+        const subRow=document.getElementById('demo-subtabs-'+btn.dataset.group);
+        if(subRow) subRow.style.display='flex';
+      }
       const ex=DE.find(e=>e.id===btn.dataset.ex);
       if(ex) loadEx(ex);
     });
   });
+
+  document.querySelectorAll('.demo-subtab').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const row=btn.closest('.demo-subtabs');
+      row.querySelectorAll('.demo-subtab').forEach(b=>b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+      const ex=DE.find(e=>e.id===btn.dataset.ex);
+      if(ex) loadEx(ex);
+    });
+  });
+
   sendBtn.addEventListener('click',()=>startStream());
   resetBtn.addEventListener('click',()=>loadEx(activeEx));
   loadEx(DE[0]);
