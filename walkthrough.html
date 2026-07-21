@@ -824,7 +824,8 @@ function restart(){
   document.querySelectorAll('.glowpulse').forEach(e=>e.classList.remove('glowpulse'));
   STAGES.forEach(s=>document.getElementById('rail_'+s.id).classList.remove('done','current'));
   hot(null);hideCaption();
-  cam.follow=btnFollow.getAttribute('aria-pressed')==='true';
+  cam.follow=true;
+  btnFollow.setAttribute('aria-pressed','true');
   cameraTo(OVERVIEW,0);
   btnPlay.textContent='▶ Play';
 }
