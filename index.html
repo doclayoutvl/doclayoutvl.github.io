@@ -202,6 +202,23 @@
     .demo-logos-row img{height:50px;width:auto;object-fit:contain;display:block;}
     .demo-logo-text{font-size:12px;font-weight:700;color:var(--teal);font-family:'Inter',sans-serif;white-space:nowrap;letter-spacing:.01em;}
     @media(max-width:768px){.demo-panel{grid-template-columns:1fr;}}
+
+    /* ── Animated architecture walkthrough ── */
+    .walkthrough-cta{margin-top:2.5rem;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:8px;padding:1.4rem 1.6rem;box-shadow:0 3px 14px rgba(30,68,82,.035);}
+    .walkthrough-cta-text h4{font-size:1rem;font-weight:700;margin-bottom:.35rem;}
+    .walkthrough-cta-text p{font-size:.88rem;color:#536874;line-height:1.65;max-width:560px;margin:0;}
+    .walkthrough-cta-actions{display:flex;flex-direction:column;align-items:flex-end;gap:.55rem;flex-shrink:0;}
+    .walkthrough-btn{background:var(--teal)!important;border-color:var(--teal)!important;color:#fff!important;font-weight:600;transition:background .18s,border-color .18s;}
+    .walkthrough-btn:hover{background:var(--blue)!important;border-color:var(--blue)!important;}
+    .walkthrough-fullscreen-link{font-size:.78rem;color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line);white-space:nowrap;}
+    .walkthrough-fullscreen-link:hover{color:var(--blue);border-color:var(--blue);}
+    .walkthrough-embed{display:none;margin-top:1.2rem;border:1px solid var(--line);border-radius:8px;overflow:hidden;box-shadow:0 7px 26px rgba(26,67,84,.08);background:#faf7f1;}
+    .walkthrough-embed iframe{width:100%;height:680px;border:0;display:block;}
+    @media(max-width:768px){
+      .walkthrough-cta{flex-direction:column;align-items:flex-start;}
+      .walkthrough-cta-actions{align-items:flex-start;width:100%;}
+      .walkthrough-embed iframe{height:520px;}
+    }
   </style>
 </head>
 
@@ -509,6 +526,26 @@
         </div>
       </div>
     </div>
+
+    <div class="walkthrough-cta" id="walkthrough-cta">
+      <div class="walkthrough-cta-text">
+        <h4><i class="fas fa-film accent"></i>&ensp;Prefer to see it in motion?</h4>
+        <p>
+          Step through the full pipeline — document + prompt &rarr; VLM &rarr; Hierarchical Grounding Contextualizer
+          (with its tree-aware attention) &rarr; Segmentation Module &rarr; masks, answer, and layout tree — in an
+          animated, camera-guided walkthrough.
+        </p>
+      </div>
+      <div class="walkthrough-cta-actions">
+        <button class="button is-small walkthrough-btn" id="walkthrough-toggle-btn" type="button">
+          <i class="fas fa-play"></i>&ensp;Play Animated Walkthrough
+        </button>
+        <a class="walkthrough-fullscreen-link" href="walkthrough.html" target="_blank" rel="noopener">
+          Open fullscreen&ensp;<i class="fas fa-up-right-from-square"></i>
+        </a>
+      </div>
+    </div>
+    <div class="walkthrough-embed" id="walkthrough-embed"></div>
   </div>
 </section>
 
@@ -1295,6 +1332,32 @@
   sendBtn.addEventListener('click',()=>startStream());
   resetBtn.addEventListener('click',()=>loadEx(activeEx));
   loadEx(DE[0]);
+})();
+</script>
+
+<script>
+(function(){
+  const btn = document.getElementById('walkthrough-toggle-btn');
+  const embed = document.getElementById('walkthrough-embed');
+  if(!btn || !embed) return;
+  btn.addEventListener('click', () => {
+    const isOpen = embed.style.display === 'block';
+    if(isOpen){
+      embed.style.display = 'none';
+      btn.innerHTML = '<i class="fas fa-play"></i>&ensp;Play Animated Walkthrough';
+      return;
+    }
+    if(!embed.querySelector('iframe')){
+      const iframe = document.createElement('iframe');
+      iframe.src = 'walkthrough.html';
+      iframe.title = 'DocLayout-VL animated architecture walkthrough';
+      iframe.loading = 'lazy';
+      embed.appendChild(iframe);
+    }
+    embed.style.display = 'block';
+    embed.scrollIntoView({behavior:'smooth', block:'nearest'});
+    btn.innerHTML = '<i class="fas fa-eye-slash"></i>&ensp;Hide Walkthrough';
+  });
 })();
 </script>
 
