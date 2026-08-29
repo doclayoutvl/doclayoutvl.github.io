@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DocLayout-VL — ECCV 2026</title>
+<style>
+:root{
+  --blue:#05539C; --orange:#F59222; --ink:#16222e; --muted:#5b6b7a; --faint:#8a97a5;
+  --bg:#f6f8fa; --card:#ffffff; --line:#dde5ec;
+  --m3:#05539C; --docog:#7C3AED; --dlvl:#0E7C61; --intro:#C2410C;
+  --neut:#7d8b99; --neut2:#a5b2be; --bad:#b42318;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#0d1117}
+body{font-family:"Avenir Next","Segoe UI",Inter,system-ui,-apple-system,sans-serif;color:var(--ink)}
+.deck{position:relative;width:100vw;height:100vh;overflow:hidden}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;background:var(--bg);
+  padding:3.8vh 4vw 6vh;overflow:hidden}
+.slide.on{display:flex}
+.slide h2{font-size:4.3vh;line-height:1.12;margin-bottom:1.2vh;font-weight:700}
+.slide h2 .k{color:var(--accent,var(--blue))}
+.slide h2 .x{color:var(--bad)}
+.kicker{font-size:1.8vh;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--accent,var(--blue));margin-bottom:.8vh}
+.slide p{font-size:2.3vh;line-height:1.45}
+.small{font-size:1.8vh;color:var(--muted)}
+.tiny{font-size:1.6vh;color:var(--faint)}
+.vc{margin-top:auto;margin-bottom:auto}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:2vw;align-items:center;min-height:0}
+.rowflex{display:flex;gap:1.5vw;align-items:stretch;min-height:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.8vh 1.8vh;box-shadow:0 2px 10px rgba(10,30,60,.05)}
+.card h3{font-size:2.3vh;margin-bottom:.8vh;color:var(--accent,var(--blue))}
+.card p{font-size:2vh;color:#33424f}
+.fig{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0}
+.fig img{max-width:100%;max-height:100%;object-fit:contain;border-radius:10px;background:#fff}
+.fig.framed img{border:1px solid var(--line);box-shadow:0 3px 14px rgba(10,30,60,.08);padding:1vh;background:#fff}
+.fig figcaption{font-size:1.75vh;color:var(--muted);margin-top:.9vh;text-align:center;max-width:60ch}
+.tok{font-family:ui-monospace,Menlo,monospace;font-size:.9em;background:#0d2740;color:#ffd28a;border-radius:6px;padding:.12vh .7vh;white-space:nowrap;margin:0 .2em}
+.tok.g{background:#2b1a4d;color:#e6d5ff}
+.tok.l{background:#0c352b;color:#b9f0dc}
+.spanchip{font-family:ui-monospace,Menlo,monospace;font-size:.9em;background:#fff3e0;border:1.5px solid var(--orange);border-radius:6px;padding:.12vh .7vh;color:#8a4b00;white-space:nowrap}
+.pill{display:inline-block;font-size:1.85vh;border:1.5px solid var(--accent,var(--blue));color:var(--accent,var(--blue));border-radius:999px;padding:.35vh 1.3vh;margin:.3vh .5vh .3vh 0;font-weight:600;background:#fff}
+.eqrow{display:flex;align-items:center;justify-content:center;gap:.8vw;flex-wrap:wrap;margin:1.2vh 0}
+.eqb{border-radius:12px;padding:1.2vh 1.4vh;font-family:Georgia,serif;font-style:italic;font-size:2.6vh;background:#fff;border:2px solid var(--line)}
+.eqb small{display:block;font-family:"Avenir Next",system-ui,sans-serif;font-style:normal;font-size:1.5vh;color:var(--muted);text-align:center;margin-top:.3vh}
+.eqb.hl{border-color:var(--accent,var(--blue));background:color-mix(in srgb,var(--accent,var(--blue)) 6%,#fff)}
+.eqop{font-size:3vh;color:var(--muted);font-weight:700}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.6vh 2vh;text-align:center;box-shadow:0 2px 10px rgba(10,30,60,.05)}
+.stat .v{font-size:5vh;font-weight:700;color:var(--accent,var(--blue));line-height:1.05}
+.stat .v.bad{color:var(--bad)}
+.stat .l{font-size:1.75vh;color:var(--muted);margin-top:.4vh}
+.statrow{display:grid;grid-auto-flow:column;gap:1.2vw;margin:1.2vh 0}
+.hero{justify-content:center;align-items:center;text-align:center;background:
+  radial-gradient(90vw 70vh at 15% -10%, #dbeafe 0%, transparent 55%),
+  radial-gradient(80vw 60vh at 100% 110%, #ffedd5 0%, transparent 55%), var(--bg)}
+.hero h1{font-size:6.6vh;line-height:1.1;max-width:80vw}
+.hero h1 .k{color:var(--blue)}
+.hero .sub{font-size:2.6vh;color:var(--muted);margin-top:2vh;max-width:72vw}
+.divider{justify-content:center;background:
+  linear-gradient(120deg, color-mix(in srgb, var(--accent) 92%, #000) 0%, var(--accent) 60%, color-mix(in srgb, var(--accent) 72%, #fff) 100%)}
+.divider .kicker{color:#ffffffcc;font-size:2.1vh;letter-spacing:.16em}
+.divider h2{color:#fff;font-size:8.4vh}
+.divider p{color:#ffffffdd;font-size:3.4vh;margin-top:1.6vh;max-width:82vw}
+.divider .time{position:absolute;top:4vh;right:4vw;color:#fff;border:2px solid #ffffff88;border-radius:999px;padding:.8vh 2.2vh;font-size:2.3vh;font-weight:700}
+.footer{position:absolute;left:0;right:0;bottom:0;height:4.4vh;display:flex;align-items:center;justify-content:space-between;padding:0 9vw 0 4vw;font-size:1.6vh;color:var(--muted)}
+.footer .act{font-weight:700;color:var(--accent,var(--blue))}
+#bar{position:fixed;left:0;bottom:0;height:.7vh;background:linear-gradient(90deg,var(--blue),var(--orange));width:0;z-index:50;transition:width .25s}
+#count{position:fixed;right:1.1vw;bottom:1.3vh;z-index:50;font-size:1.7vh;color:#9fb0c0;font-family:ui-monospace,Menlo,monospace}
+.frag{opacity:0;transform:translateY(1.2vh);transition:all .3s}
+.frag.show{opacity:1;transform:none}
+.callout{background:#fff;border:1px solid var(--line);border-left:6px solid var(--orange);border-radius:12px;padding:1.3vh 1.8vh;font-size:2.15vh}
+.callout b{color:var(--blue)}
+.logos{display:flex;gap:1.8vw;align-items:center;justify-content:center;margin-top:3.4vh}
+.logos span{background:#fff;border:1px solid var(--line);border-radius:14px;padding:1.4vh 2.2vh;display:flex;align-items:center;box-shadow:0 2px 8px rgba(10,30,60,.06)}
+.logos img{height:8.4vh;object-fit:contain}
+.papers{display:flex;gap:1.4vw;align-items:stretch;justify-content:center;margin-top:2.4vh}
+.papers .paper{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.6vh 2.4vh;min-width:11vw;box-shadow:0 2px 8px rgba(10,30,60,.06)}
+.papers h4{margin:0;font-size:2.1vh;font-weight:800;color:var(--ink);letter-spacing:-.01em}
+.papers span{display:block;margin-top:.5vh;font-size:1.55vh;color:var(--muted)}
+.papers .oral{font-size:inherit;font-weight:700;color:var(--orange)}
+.storyline{display:grid;grid-template-columns:repeat(3,1fr);align-items:stretch;gap:1.4vw}
+.storyline .chap{border-radius:18px;padding:2.8vh 2.4vh;color:#fff;display:flex;flex-direction:column;gap:1vh}
+.recipe{text-align:center;font-size:2.5vh;color:var(--ink);margin-bottom:3.2vh}
+.recipe b{color:var(--blue)}
+.probs{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6vw;margin-top:2.6vh}
+.probs .prob{background:#fdf2f0;border:1px solid #f3d4cf;border-radius:16px;padding:2.2vh 2vh}
+.probs .prob h3{font-size:2.2vh;color:#b42318;margin-bottom:.9vh}
+.probs .prob p{font-size:1.9vh;color:#7a4a44;line-height:1.45}
+.abl{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+.abl th{font-size:1.55vh;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:.7vh .9vh;border-bottom:2px solid var(--line);text-align:center}
+.abl td{font-size:1.95vh;color:#33424f;padding:1vh .9vh;border-bottom:1px solid var(--line);text-align:center}
+.abl td:first-child{text-align:left}
+.abl tr.ours td{background:#eaf1f8;font-weight:700;color:var(--m3);border-bottom:none}
+.sw{display:inline-block;width:1.6vh;height:1.6vh;border-radius:4px;margin-right:.6vw;vertical-align:baseline;transform:translateY(.15vh)}
+.fracline{height:2.5px;background:var(--ink);border-radius:2px;margin:.9vh 0}
+.storyline .chap h3{font-size:3vh;color:#fff}
+.storyline .chap p{font-size:2.05vh;color:#ffffffdd}
+.storyline .chap .v{font-size:1.6vh;font-weight:700;letter-spacing:.08em;color:#ffffffb0;text-transform:uppercase}
+.storyline .chap svg{margin-top:auto}
+.storyline .chap .keyline{font-size:1.9vh;color:#fff;font-weight:700;margin-top:1vh}
+.storyline .arr{align-self:center;font-size:4.4vh;color:#8aa2b8;font-weight:800}
+kbd{font-family:ui-monospace,Menlo,monospace;background:#fff;border:1px solid var(--line);border-bottom-width:3px;border-radius:6px;padding:.1vh .7vh;font-size:1.7vh}
+.svgbox{min-height:0;display:flex;align-items:center;justify-content:center}
+.svgbox svg{max-width:100%;max-height:100%;height:auto}
+svg text{font-family:"Avenir Next","Segoe UI",system-ui,sans-serif}
+.chartcard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:1.8vh;box-shadow:0 2px 10px rgba(10,30,60,.06);display:flex;flex-direction:column;min-height:0}
+.chartcard h3{font-size:2.1vh;margin-bottom:.4vh}
+.chartcard .sub{font-size:1.7vh;color:var(--muted);margin-bottom:1vh}
+.ifwrap{flex:1;min-height:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 3px 14px rgba(10,30,60,.1);background:#fff}
+.ifwrap iframe{width:100%;height:100%;border:0;display:block}
+.ifbar{display:flex;justify-content:space-between;align-items:center;margin-top:.8vh;padding-right:8vw}
+.ifbar a{color:var(--accent,var(--blue));font-weight:700;font-size:1.8vh;text-decoration:none}
+.navbtns{position:absolute;right:1.2vw;bottom:5.4vh;display:flex;gap:.6vw;z-index:30}
+.navbtns button{width:5vh;height:5vh;border-radius:50%;border:1px solid var(--line);background:#fff;
+  font-size:2.6vh;color:var(--accent,var(--blue));cursor:pointer;box-shadow:0 2px 8px rgba(10,30,60,.15);font-weight:700}
+.navbtns button:hover{background:var(--accent,var(--blue));color:#fff}
+.nb{white-space:nowrap}
+.deck.overview{overflow:auto;background:#0d1117;padding:2vh}
+.deck.overview .slide{display:flex;position:relative;inset:auto;width:32vw;height:18vw;float:left;margin:.5vw;border-radius:8px;overflow:hidden;cursor:pointer;zoom:.32}
+.deck.overview .ifwrap iframe{display:none}
+@media print{
+  html,body{background:#fff}
+  .deck .slide{display:flex !important;position:relative;inset:auto;width:100%;height:100vh;page-break-after:always}
+  .frag{opacity:1 !important;transform:none !important}
+  #bar,#count,.navbtns{display:none}
+}
+
+/* ---- carried over from the talk for team + QR slides ---- */
+/* ---- team slides ---- */
+/* wraps to centred rows of four — names get room instead of colliding */
+.team{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;
+  gap:2.6vh 2vw;margin:auto;padding:1vh 0;max-width:74vw}
+.person{display:flex;flex-direction:column;align-items:center;gap:1vh;width:15.5vw;
+  overflow-wrap:break-word}
+.person .ph{position:relative;width:8.6vw;height:8.6vw;border-radius:50%;overflow:hidden;
+  background:color-mix(in srgb,var(--accent) 12%,#fff);border:.35vh solid var(--accent);
+  display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(10,30,60,.10)}
+.person .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.person .ini{font-size:3vh;font-weight:800;color:var(--accent);letter-spacing:.04em}
+.person figcaption{font-size:1.8vh;line-height:1.25;color:var(--ink);text-align:center;
+  font-weight:600;width:100%}
+.person sup{color:var(--accent);font-weight:800}
+.teamfoot{text-align:center;font-size:1.8vh;color:var(--muted);padding-bottom:1vh}
+.teamfoot .tiny{color:var(--faint)}
+/* ---- project-page QR codes on the closing slide ----
+   Each tile hides itself if its PNG is missing, so the row stays tidy while
+   the codes are still being generated. */
+.qrrow{display:flex;gap:2.2vw;justify-content:center;align-items:flex-start;margin-top:2.4vh}
+.qrcard{display:flex;flex-direction:column;align-items:center;gap:.9vh;width:13vw}
+.qrcard img{width:9.6vw;height:9.6vw;object-fit:contain;background:#fff;padding:.7vh;
+  border:1px solid var(--line);border-radius:10px;box-shadow:0 2px 10px rgba(10,30,60,.08)}
+.qrcard .nm{font-size:1.95vh;font-weight:700;color:var(--qc,var(--blue));line-height:1.15}
+.qrcard .url{font-family:ui-monospace,Menlo,monospace;font-size:1.4vh;color:var(--faint);
+  word-break:break-all;line-height:1.25}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- ====== 33 · DLVL DIVIDER ====== -->
+<section class="slide divider" style="--accent:var(--dlvl)">
+  <div class="kicker">ECCV 2026</div>
+  <h2>DocLayout-VL</h2>
+  <p>A Foundational Model for <b>Hierarchical</b>, <b>Open-Set</b> and <b>Promptable</b> Document Layout Segmentation</p>
+  <p style="font-size:2.45vh;margin-top:3vh"><span class="nb">Venkata Kesav Venna*</span> · <span class="nb">Srihari Bandarupalli*</span> · <span class="nb">Anirudh Srinivasan*</span> · <span class="nb">Raghuveer R</span> · <span class="nb">Sai Madhusudan Gunda</span> · <span class="nb">Ravi Kiran Sarvadevabhatla</span><br><span style="font-size:2.05vh;color:#ffffffbb">* equal contribution &nbsp;·&nbsp; BharatGen · IIIT Hyderabad &nbsp;·&nbsp; doclayoutvl.github.io</span></p>
+</section>
+
+<!-- ====== 34 · DLVL LEAP ====== -->
+<section class="slide" style="--accent:var(--dlvl)">
+  <div class="kicker">DocLayout-VL · The leap</div>
+  <h2>From grounding answers… to grounding <span class="k">the entire page</span></h2>
+  <div class="vc" style="display:flex;flex-direction:column;gap:1.6vh">
+  <p class="small">Document layout analysis today:</p>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.2vw">
+    <div class="card"><h3 style="color:#b42318;text-decoration:line-through">fixed classes</h3><p class="small">every page forced into 5–74 predefined classes</p></div>
+    <div class="card frag"><h3 style="color:#b42318;text-decoration:line-through">flat layout detection</h3><p class="small">no hierarchy — sections, headings, text all peers</p></div>
+    <div class="card frag"><h3 style="color:#b42318;text-decoration:line-through">box detection</h3><p class="small">axis-aligned boxes misrepresent curved text, wrapped columns, circular charts</p></div>
+  </div>
+  <div class="callout frag" style="border-left-color:var(--dlvl)"><b style="color:var(--dlvl)">The reframe:</b> layout analysis as <b>contextualized, hierarchical, open-set, promptable segmentation</b> — one model, one queryable interface.</div>
+  <figure class="fig frag" style="min-height:0"><img src="assets/dlvl_teaser.png" alt="DocLayout-VL teaser" style="max-height:34vh"></figure>
+  </div>
+  <div class="footer"><span class="act">DocLayout-VL</span><span>Motivation</span></div>
+</section>
+
+<!-- ====== 35a · DLVL TASKS A+B ====== -->
+<section class="slide" style="--accent:var(--dlvl)">
+  <div class="kicker">DocLayout-VL · Task</div>
+  <h2>f<sub>θ</sub>(d, P) → (<span style="position:relative;display:inline-block">T<span style="position:absolute;left:0;right:0;top:-0.36em;text-align:center;font-size:.62em;line-height:1">ˆ</span></span>, <span style="position:relative;display:inline-block">M<span style="position:absolute;left:0;right:0;top:-0.36em;text-align:center;font-size:.62em;line-height:1">ˆ</span></span>, <span style="position:relative;display:inline-block">X<span style="position:absolute;left:0;right:0;top:-0.36em;text-align:center;font-size:.62em;line-height:1">ˆ</span></span>) &nbsp;<span class="small">page + prompt → tree, masks, optional explanations</span></h2>
+  <div class="cols" style="grid-template-columns:.72fr 1.28fr;flex:1;min-height:0;align-items:start">
+    <div style="display:flex;flex-direction:column;height:100%;gap:1vh">
+      <figure class="fig framed" style="flex:1;min-height:0"><img src="assets/dlvl_task_A.png" alt="Task A: layout as segmentation" style="max-height:48vh"></figure>
+      <div class="card"><h3>A · masks</h3><p class="small">every region gets a pixel-accurate mask — even a donut-shaped magazine spread</p></div>
+    </div>
+    <div style="display:flex;flex-direction:column;height:100%;gap:1vh">
+      <figure class="fig framed" style="flex:1;min-height:0"><img src="assets/dlvl_task_B.png" alt="Task B: open-set labels" style="max-height:48vh"></figure>
+      <div class="card frag"><h3>B · open-set labels</h3><p class="small">the same policy parsed with generic classes (B1) or <b>insurance-specific</b> ones — "premium breakdown", "authorization signature" (B2). The prompt defines the vocabulary.</p></div>
+    </div>
+  </div>
+  <div class="footer"><span class="act">DocLayout-VL</span><span>Tasks A · B</span></div>
+</section>
+
+<!-- ====== 35b · DLVL TASK C ====== -->
+<section class="slide" style="--accent:var(--dlvl)">
+  <div class="kicker">DocLayout-VL · Task</div>
+  <h2>Task C — the page as a <span class="k">hierarchy tree</span></h2>
+  <div class="cols" style="grid-template-columns:.55fr 1.45fr;flex:1;min-height:0;align-items:center">
+    <figure class="fig framed" style="height:100%"><img src="assets/dlvl_task_C_page.png" alt="Segmented newspaper front page" style="max-height:62vh"></figure>
+    <figure class="fig framed" style="height:100%"><img src="assets/dlvl_task_C_tree.png" alt="Hierarchical layout tree" style="max-height:62vh"></figure>
+  </div>
+  <p class="small" style="text-align:center;margin-top:.8vh">"Give the full hierarchical layout parse for this newspaper" → a layout tree <span style="position:relative;display:inline-block">T<span style="position:absolute;left:0;right:0;top:-0.3em;text-align:center;font-size:.7em;line-height:1">ˆ</span></span> = (<span style="position:relative;display:inline-block">V<span style="position:absolute;left:0;right:0;top:-0.3em;text-align:center;font-size:.7em;line-height:1">ˆ</span></span>, <span style="position:relative;display:inline-block">E<span style="position:absolute;left:0;right:0;top:-0.3em;text-align:center;font-size:.7em;line-height:1">ˆ</span></span>): teaser-strip, masthead and main-grid, down to headlines, media units and image captions.</p>
+  <div class="footer"><span class="act">DocLayout-VL</span><span>Task C · hierarchy</span></div>
+</section>
+
+<!-- ====== 35c · DLVL TASK D ====== -->
+<section class="slide" style="--accent:var(--dlvl)">
+  <div class="kicker">DocLayout-VL · Task</div>
+  <h2>Task D — <span class="k">promptable</span> parsing</h2>
+  <figure class="fig framed" style="flex:1;width:100%">
+    <img src="assets/dlvl_task_Dfull.png" alt="Task D: promptable parsing examples" style="max-height:56vh;width:94%">
+    <figcaption>(D1) "Mask all personal identifiable information of the passport holder" → photo, signature, MRZ block… · (D2) "Find the figure to the left of a table" → a spatial query answered with a grounded region + explanation.</figcaption>
+  </figure>
+  <div class="footer"><span class="act">DocLayout-VL</span><span>Task D · promptable</span></div>
+</section>
+
+<!-- ====== 36 · DLVL SERIALIZATION ====== -->
+<section class="slide" style="--accent:var(--dlvl)">
+  <div class="kicker">DocLayout-VL · Output representation</div>
+  <h2>A serialized layout tree, interleaved with <span class="tok l">[LAY]</span> tokens</h2>
+  <div class="cols vc" style="grid-template-columns:1.1fr .9fr;align-items:start">
+    <div>
+      <div class="card" style="font-family:ui-monospace,Menlo,monospace;font-size:2.4vh;line-height:2">
+        &lt;section&gt;<br>
+        &nbsp;&nbsp;heading<span class="tok l">[LAY]</span><br>
+        &nbsp;&nbsp;paragraph<span class="tok l">[LAY]</span><br>
+        &nbsp;&nbsp;paragraph<span class="tok l">[LAY]</span><br>
+        &lt;/section&gt;<span class="tok l">[LAY]</span>
+      </div>
+      <p class="small" style="margin-top:1.2vh">The generated sequence directly encodes the hierarchy: leaves as <i>label</i><span class="tok l">[LAY]</span>, parent nodes closed by <i>&lt;/tag&gt;</i><span class="tok l">[LAY]</span>. Each <span class="tok l">[LAY]</span> token corresponds one-to-one with a spatial region; labels come from the prompt-defined vocabulary.</p>
+    </div>
+    <div class="svgbox frag" style="align-self:center">
+      <svg viewBox="0 0 320 150" style="width:88%">
+        <circle cx="160" cy="26" r="15" fill="#0E7C61"/><text x="160" y="31" text-anchor="middle" font-size="11" fill="#fff" font-weight="700">sec</text>
+        <path d="M160 41 v18 M160 59 h-100 v16 M160 59 v16 M160 59 h100 v16" stroke="#7d8b99" stroke-width="2" fill="none"/>
+        <g text-anchor="middle" font-size="10.5" fill="#fff" font-weight="700">
+          <circle cx="60" cy="92" r="14" fill="#54ab92"/><text x="60" y="96">head</text>
+          <circle cx="160" cy="92" r="14" fill="#54ab92"/><text x="160" y="96">para</text>
+          <circle cx="260" cy="92" r="14" fill="#54ab92"/><text x="260" y="96">para</text>
+        </g>
+        <text x="160" y="140" text-anchor="middle" font-size="12.5" fill="#5b6b7a">one [LAY] per node → one mask per node</text>
+      </svg>
+    </div>
+  </div>
+  <div class="footer"><span class="act">DocLayout-VL</span><span>Serialization</span></div>
+</section>
+
+<!-- ====== 38 · DLVL ARCHITECTURE ====== -->
+<section class="slide" style="--accent:var(--dlvl)">
+  <div class="kicker">DocLayout-VL · Architecture</div>
+  <h2>Architecture</h2>
+  <figure class="fig framed" style="flex:1;width:100%;min-height:0"><img src="assets/dlvl_arch.png" alt="DocLayout-VL architecture" style="max-height:72vh"></figure>
+  <div class="footer"><span class="act">DocLayout-VL</span><span>Architecture</span></div>
+</section>
+
+<!-- ====== 37 · DLVL INTERACTIVE ====== -->
+<section class="slide iframe-slide" style="--accent:var(--dlvl)">
+  <div class="kicker">DocLayout-VL · Interactive</div>
+  <h2 style="font-size:3.4vh">DocLayout-VL in action</h2>
+  <div class="ifwrap"><iframe data-src="interactive/doclayoutvl.html" loading="lazy" title="DocLayout-VL interactive walkthrough"></iframe></div>
+  <div class="ifbar">
+    <span class="small">Click inside to drive it · <kbd>Space</kbd> pause · <kbd>R</kbd> restart · <kbd>F</kbd> fit — then use ‹ › to continue the talk</span>
+    <a href="interactive/doclayoutvl.html" target="_blank">open standalone ↗</a>
+  </div>
+  <div class="footer"><span class="act">DocLayout-VL</span><span>Interactive architecture</span></div>
+</section>
+
+<!-- ====== 39 · DLVL LOSSES ====== -->
+<section class="slide" style="--accent:var(--dlvl)">
+  <div class="kicker">DocLayout-VL · Training objective</div>
+  <h2>The loss function</h2>
+  <div class="vc" style="display:flex;flex-direction:column;gap:2vh">
+  <div class="eqrow" style="margin:0">
+    <div class="eqb">𝓛<sub>total</sub> =</div>
+    <div class="eqb">𝓛<sub>lm</sub><small>cross-entropy</small></div><div class="eqop">+</div>
+    <div class="eqb">𝓛<sub>seg</sub><small>Dice + BCE per mask</small></div><div class="eqop">+</div>
+    <div class="eqb hl">𝓛<sub>bg</sub><small>background exclusion</small></div><div class="eqop">+</div>
+    <div class="eqb hl">𝓛<sub>struct</sub><small>containment + non-overlap</small></div>
+  </div>
+  <div class="cols" style="grid-template-columns:1fr 1fr">
+    <div class="card" style="display:flex;gap:1.2vw;align-items:center">
+      <svg viewBox="0 0 170 142" style="width:12vw;flex:0 0 auto">
+        <rect x="8" y="8" width="154" height="108" rx="10" fill="#e9f2ef" stroke="#0E7C61" stroke-width="2"/>
+        <text x="18" y="28" font-size="11" fill="#3d5f55" font-weight="700">parent</text>
+        <rect x="24" y="40" width="88" height="34" rx="6" fill="#0E7C61" opacity=".85"/>
+        <path d="M112 57 q30 0 40 -20" stroke="#b42318" stroke-width="3" fill="none"/>
+        <ellipse cx="152" cy="30" rx="14" ry="9" fill="#b42318" opacity=".8"/>
+        <text x="85" y="136" text-anchor="middle" font-size="11" fill="#3d5f55">child must stay inside</text>
+      </svg>
+      <div><h3>Containment</h3><p class="small">a child's mask is penalized wherever it leaves its parent's</p></div>
+    </div>
+    <div class="card frag" style="display:flex;gap:1.2vw;align-items:center">
+      <svg viewBox="0 0 170 142" style="width:12vw;flex:0 0 auto">
+        <rect x="14" y="24" width="80" height="60" rx="8" fill="#0E7C61" opacity=".8"/>
+        <rect x="72" y="46" width="84" height="60" rx="8" fill="#54ab92" opacity=".85"/>
+        <path d="M72 46 h22 v38 h-22 z" fill="#b42318" opacity=".85"/>
+        <text x="85" y="130" text-anchor="middle" font-size="11" fill="#3d5f55">siblings must not overlap</text>
+      </svg>
+      <div><h3>Sibling non-overlap</h3><p class="small">siblings can't claim the same pixels</p></div>
+    </div>
+  </div>
+  <p class="small frag" style="text-align:center">𝓛<sub>bg</sub> — no mask may spill into whitespace outside the page's ground-truth foreground.</p>
+  </div>
+  <div class="footer"><span class="act">DocLayout-VL</span><span>Losses</span></div>
+</section>
+
+<!-- ====== 40 · DLVL CURRICULUM ====== -->
+<section class="slide" style="--accent:var(--dlvl)">
+  <div class="kicker">DocLayout-VL · Training strategy</div>
+  <h2>A three-stage curriculum</h2>
+  <div class="vc" style="display:flex;flex-direction:column;gap:2.6vh">
+  <div class="svgbox">
+  <svg viewBox="0 0 940 200" style="width:94%">
+    <path d="M40 100 h860" stroke="#c9d4de" stroke-width="3"/>
+    <g text-anchor="middle">
+      <circle cx="170" cy="100" r="10" fill="#0E7C61"/>
+      <rect x="60" y="20" width="220" height="56" rx="10" fill="#fff" stroke="#0E7C61" stroke-width="2"/>
+      <text x="170" y="43" font-size="15" font-weight="700" fill="#16222e">1 · flat layouts</text>
+      <text x="170" y="63" font-size="12.5" fill="#5b6b7a">dense HGC attention</text>
+      <text x="170" y="135" font-size="12.5" fill="#5b6b7a">❄ VLM vision encoder frozen</text>
+      <circle cx="470" cy="100" r="10" fill="#0E7C61"/>
+      <rect x="360" y="20" width="220" height="56" rx="10" fill="#fff" stroke="#0E7C61" stroke-width="2"/>
+      <text x="470" y="43" font-size="15" font-weight="700" fill="#16222e">2 · hierarchical</text>
+      <text x="470" y="63" font-size="12.5" fill="#5b6b7a">switch to tree-sparse attention</text>
+      <text x="470" y="135" font-size="12.5" fill="#5b6b7a">learn structure</text>
+      <circle cx="770" cy="100" r="10" fill="#0E7C61"/>
+      <rect x="650" y="20" width="240" height="56" rx="10" fill="#fff" stroke="#0E7C61" stroke-width="2"/>
+      <text x="770" y="43" font-size="15" font-weight="700" fill="#16222e">3 · instruction tuning</text>
+      <text x="770" y="63" font-size="12.5" fill="#5b6b7a">promptability</text>
+      <text x="770" y="130" font-size="12.5" fill="#5b6b7a">❄ SAM vision + prompt encoders</text>
+      <text x="770" y="150" font-size="12.5" fill="#5b6b7a">train LLM + mask decoder</text>
+    </g>
+  </svg>
+  </div>
+  </div>
+  <div class="footer"><span class="act">DocLayout-VL</span><span>Curriculum</span></div>
+</section>
+
+<!-- ====== 41 · DLVL DATA ====== -->
+<section class="slide" style="--accent:var(--dlvl)">
+  <div class="kicker">DocLayout-VL · Data &amp; benchmark</div>
+  <h2>HOPLay-Docs-80M — layout supervision at <span class="k">foundation scale</span></h2>
+  <div class="vc" style="display:flex;flex-direction:column;gap:2.4vh;justify-content:center;flex:1">
+  <div class="statrow" style="grid-auto-flow:column;margin:0">
+    <div class="stat"><div class="v">2.5M</div><div class="l">pages</div></div>
+    <div class="stat"><div class="v">80M</div><div class="l">masks</div></div>
+    <div class="stat"><div class="v">400K</div><div class="l">open-set labels</div></div>
+    <div class="stat"><div class="v">58</div><div class="l">doc types · 12 domains</div></div>
+    <div class="stat"><div class="v">40</div><div class="l">languages, strong Indic coverage</div></div>
+  </div>
+  <p class="small frag" style="text-align:center">Engine: VLM page reconstruction → detector relabeling → <b>SAM3</b> pixel masks → Set-of-Mark instruction data → VLM + LLM verification.</p>
+  <p class="small frag" style="text-align:center"><b>HOPLay-Docs-Bench</b>: 5,000 docs · 51,241 regions, human-verified · four tracks (flat / hierarchical / curved / promptable) · OS = mean of track averages.</p>
+  <p class="tiny" style="text-align:center">Splits mirror the curriculum: FlatLay-Docs-25M · HierLay-Docs-40M · PromptLay-Docs-15M (5M instruction annotations)</p>
+  </div>
+  <div class="footer"><span class="act">DocLayout-VL</span><span>Dataset &amp; benchmark</span></div>
+</section>
+
+<!-- ====== 42 · DLVL RESULTS ====== -->
+<section class="slide" style="--accent:var(--dlvl)">
+  <div class="kicker">DocLayout-VL · Results</div>
+  <h2><span class="k">Doubling</span> the best zero-shot VLM</h2>
+  <div class="cols vc" style="grid-template-columns:1.25fr .75fr">
+    <div class="chartcard">
+      <h3>HOPLay-Docs-Bench · Overall Score</h3><p class="sub">mean of the four track averages · 0–100</p>
+      <svg viewBox="0 0 640 260" role="img" aria-label="Overall score bars">
+        <g stroke="#e1e0d9" stroke-width="1"><line x1="215" y1="14" x2="215" y2="226"/><line x1="320" y1="14" x2="320" y2="226"/><line x1="425" y1="14" x2="425" y2="226"/><line x1="530" y1="14" x2="530" y2="226"/><line x1="635" y1="14" x2="635" y2="226"/></g>
+        <g font-size="13" fill="#898781" text-anchor="middle"><text x="215" y="246">0</text><text x="320" y="246">25</text><text x="425" y="246">50</text><text x="530" y="246">75</text><text x="628" y="246">100</text></g>
+        <g font-size="14" fill="#16222e" text-anchor="end">
+          <text x="203" y="40">best small open VLM</text><text x="203" y="82">Gemini 3 Pro</text><text x="203" y="124">Qwen3-VL-8B ft</text><text x="203" y="166" font-weight="700">DocLayout-VL-4B</text><text x="203" y="208" font-weight="700">DocLayout-VL-8B</text>
+        </g>
+        <g>
+          <path d="M215 26 h128.7 a4 4 0 0 1 4 4 v10 a4 4 0 0 1 -4 4 h-128.7 z" fill="#7d8b99"><title>Qwen3-VL-8B-it · 31.6 (open VLMs span 10.0–31.6)</title></path>
+          <path d="M215 68 h152.2 a4 4 0 0 1 4 4 v10 a4 4 0 0 1 -4 4 h-152.2 z" fill="#7d8b99"><title>Gemini 3 Pro · 37.2 — best zero-shot</title></path>
+          <path d="M215 110 h188.4 a4 4 0 0 1 4 4 v10 a4 4 0 0 1 -4 4 h-188.4 z" fill="#7d8b99"><title>Qwen3-VL-8B fine-tuned · 45.8</title></path>
+          <path d="M215 152 h297.6 a4 4 0 0 1 4 4 v10 a4 4 0 0 1 -4 4 h-297.6 z" fill="#54ab92"><title>DocLayout-VL-4B-it · 71.8</title></path>
+          <path d="M215 194 h329.5 a4 4 0 0 1 4 4 v10 a4 4 0 0 1 -4 4 h-329.5 z" fill="#0E7C61"><title>DocLayout-VL-8B-it · 79.4</title></path>
+        </g>
+        <g font-size="13.5" fill="#16222e"><text x="354" y="39">31.6</text><text x="377" y="81">37.2</text><text x="413" y="123">45.8</text><text x="518" y="165" font-weight="700">71.8</text><text x="550" y="207" font-weight="700">79.4</text></g>
+      </svg>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:1.1vh;justify-content:center">
+      <div class="stat"><div class="v" style="font-size:4vh">6.9 vs 77.5</div><div class="l">hierarchical-track Open mIoU, Gemini 3 Pro vs ours — frontier VLMs can't build layout trees</div></div>
+      <div class="card frag"><h3>Per track, 8B (Om · cI for promptable)</h3><p class="small">flat 86.7 · hierarchical 77.5 · curved 87.9 · promptable 70.2 (G-Eval 87.2)</p></div>
+      <div class="card frag"><h3>Zero-shot closed-set (mAP@50:95)</h3><p class="small">PubLayNet 96.5 · M6Docs 76.9 · IndicDLP 77.5 — competitive with dedicated detectors trained per-dataset</p></div>
+    </div>
+  </div>
+  <div class="footer"><span class="act">DocLayout-VL</span><span>Main results</span></div>
+</section>
+
+<!-- ====== 43 · DLVL SCALING ====== -->
+<section class="slide" style="--accent:var(--dlvl)">
+  <div class="kicker">DocLayout-VL · The deepest ablation</div>
+  <h2>Architecture beats <span class="k">data scale</span></h2>
+  <div class="vc" style="display:flex;flex:1;align-items:center;justify-content:center">
+    <div class="chartcard" style="width:72%">
+      <h3>Overall score vs training-data fraction (Qwen3-VL-8B)</h3>
+      <svg viewBox="0 0 784 370" role="img" aria-label="Slopegraph: configurations at 25 and 100 percent data">
+        <text x="640" y="30" font-size="13.5" fill="#b42318" font-weight="700">the gap never closes</text>
+        <g stroke="#e1e0d9" stroke-width="1"><line x1="140" y1="40" x2="140" y2="340"/><line x1="500" y1="40" x2="500" y2="340"/></g>
+        <g font-size="13.5" fill="#52514e" text-anchor="middle"><text x="140" y="362">25% data</text><text x="500" y="362">100% data</text></g>
+        <g stroke-linecap="round">
+          <line x1="140" y1="278" x2="500" y2="229" stroke="#a5b2be" stroke-width="2"/>
+          <line x1="140" y1="196" x2="500" y2="122" stroke="#7d8b99" stroke-width="2"/>
+          <line x1="140" y1="188" x2="500" y2="109" stroke="#566573" stroke-width="2"/>
+          <line x1="140" y1="180" x2="500" y2="96"  stroke="#0E7C61" stroke-width="3.5"/>
+        </g>
+        <g stroke="#fff" stroke-width="2">
+          <circle cx="140" cy="278" r="5" fill="#a5b2be"/><circle cx="500" cy="229" r="5" fill="#a5b2be"/>
+          <circle cx="140" cy="196" r="5" fill="#7d8b99"/><circle cx="500" cy="122" r="5" fill="#7d8b99"/>
+          <circle cx="140" cy="188" r="5" fill="#566573"/><circle cx="500" cy="109" r="5" fill="#566573"/>
+          <circle cx="140" cy="180" r="6.5" fill="#0E7C61"/><circle cx="500" cy="96" r="6.5" fill="#0E7C61"/>
+        </g>
+        <g font-size="13.5" fill="#16222e">
+          <text x="512" y="234">VLM only (boxes) · 66.1</text>
+          <text x="512" y="129">+ SAM head · 76.8</text>
+          <text x="512" y="110">+ HGC · 78.1</text>
+          <text x="512" y="90" font-weight="700">full (+ struct losses) · 79.4</text>
+          <text x="128" y="282" text-anchor="end">61.2</text><text x="128" y="200" text-anchor="end">69.4</text><text x="128" y="180" text-anchor="end">70.2 / 71.0</text>
+        </g>
+        <path d="M732 229 v-125" stroke="#b42318" stroke-width="2" marker-end="url(#arr8)" stroke-dasharray="6 4"/>
+        <defs><marker id="arr8" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#b42318"/></marker></defs>
+      </svg>
+    </div>
+  </div>
+  <div class="footer"><span class="act">DocLayout-VL</span><span>Scaling</span></div>
+</section>
+
+<!-- ====== 44 · DLVL QUAL ====== -->
+<section class="slide" style="--accent:var(--dlvl)">
+  <div class="kicker">DocLayout-VL · The point</div>
+  <h2>Layout as a <span class="k">queryable interface</span></h2>
+  <div class="vc" style="display:flex;flex-direction:column;gap:1.2vh">
+  <figure class="fig framed" style="width:100%"><img src="assets/dlvl_teaser.png" alt="DocLayout-VL teaser: a page becomes a controllable structured parse" style="width:84%"><figcaption>One pass turns a page into a controllable structured parse: semantic nodes, hierarchy, pixel masks, and prompt-conditioned explanations.</figcaption></figure>
+  <figure class="fig framed" style="width:56%;margin:0 auto"><img src="assets/dlvl_task_c_tree.jpeg" alt="A fund factsheet parsed into a layout tree" style="max-height:22vh"><figcaption>…and every node of that parse is groundable — here, a fund factsheet's full layout tree.</figcaption></figure>
+  <div class="callout"><b>Takeaway #3</b> — with one [LAY] token per region, layout is no longer a preprocessing step — it's a <b>model output you can prompt</b>: tree, masks, explanations.</div>
+  </div>
+  <div class="footer"><span class="act">DocLayout-VL</span><span>Takeaway</span></div>
+</section>
+
+<!-- ====== DLVL SAM FOR DOCS ====== -->
+<section class="slide" style="--accent:var(--dlvl)">
+  <div class="kicker">DocLayout-VL · SAM for documents</div>
+  <figure class="fig" style="flex:1;min-height:0"><img src="assets/dlvl_samfordocs.png" alt="Segment Anything for Documents is here — DocLayout-VL" style="max-height:80vh"></figure>
+  <div class="footer"><span class="act">DocLayout-VL</span><span>SAM for documents</span></div>
+</section>
+
+<!-- ====== TEAM · DocLayout-VL ====== -->
+<section class="slide" style="--accent:var(--dlvl)">
+  <div class="kicker">DocLayout-VL · the team</div>
+  <h2>Built by</h2>
+  <div class="team"><figure class="person"><span class="ph"><span class="ini">VK</span><img src="team/Kesav.jpg" alt="Venkata Kesav Venna" loading="lazy" onerror="this.remove()"></span><figcaption>Venkata Kesav Venna<sup>*</sup></figcaption></figure><figure class="person"><span class="ph"><span class="ini">SB</span><img src="team/Srihari.jpg" alt="Srihari Bandarupalli" loading="lazy" onerror="this.remove()"></span><figcaption>Srihari Bandarupalli<sup>*</sup></figcaption></figure><figure class="person"><span class="ph"><span class="ini">AS</span><img src="team/Anirudh.jpg" alt="Anirudh Srinivasan" loading="lazy" onerror="this.remove()"></span><figcaption>Anirudh Srinivasan<sup>*</sup></figcaption></figure><figure class="person"><span class="ph"><span class="ini">RR</span><img src="team/Raghuveer.jpg" alt="Raghuveer R" loading="lazy" onerror="this.remove()"></span><figcaption>Raghuveer R<sup></sup></figcaption></figure><figure class="person"><span class="ph"><span class="ini">SM</span><img src="team/SaiMadhu.jpg" alt="Sai Madhusudan Gunda" loading="lazy" onerror="this.remove()"></span><figcaption>Sai Madhusudan Gunda<sup></sup></figcaption></figure><figure class="person"><span class="ph"><span class="ini">RK</span><img src="team/RaviKiran.jpg" alt="Ravi Kiran Sarvadevabhatla" loading="lazy" onerror="this.remove()"></span><figcaption>Ravi Kiran Sarvadevabhatla<sup></sup></figcaption></figure></div>
+  <div class="teamfoot">BharatGen · IIIT Hyderabad &nbsp; <span class="tiny">* equal contribution</span></div>
+</section>
+
+<!-- ====== THANKS ====== -->
+<section class="slide hero" style="--accent:var(--dlvl)">
+  <h1 style="font-size:5.4vh">Thank you — <span class="k">questions?</span></h1>
+  <div class="qrrow">
+    <figure class="qrcard" style="--qc:var(--dlvl)"><img src="qr/doclayoutvl.png" alt="DocLayout-VL project page QR" onerror="this.closest('.qrcard').style.display='none'"><figcaption class="nm">DocLayout-VL</figcaption><span class="url">doclayoutvl.github.io</span></figure>
+  </div>
+  <div class="logos"><span><img src="assets/logo_bharatgen.png" alt="BharatGen"></span><span><img src="assets/logo_iiith.jpg" alt="IIIT Hyderabad"></span></div>
+  <p class="sub" style="font-size:1.85vh;margin-top:2.6vh">DocLayout-VL (ECCV 2026)<br>BharatGen · IIIT Hyderabad</p>
+</section>
+
+</div>
+
+<div id="bar"></div><div id="count"></div>
+
+<script>
+(function(){
+  const slides=[...document.querySelectorAll('.slide')];
+  const deck=document.getElementById('deck');
+  const bar=document.getElementById('bar'), count=document.getElementById('count');
+  let i=Math.max(0,Math.min(slides.length-1,(parseInt(location.hash.slice(1),10)||1)-1));
+  const ALL=location.search.includes('all');
+  function frags(s){return [...s.querySelectorAll('.frag')]}
+  function loadIframe(s){
+    const f=s.querySelector('iframe[data-src]');
+    if(f && !f.src){f.src=f.dataset.src}
+  }
+  function show(n,revealAll){
+    slides.forEach((s,j)=>s.classList.toggle('on',j===n));
+    frags(slides[n]).forEach(el=>el.classList.toggle('show',ALL||!!revealAll));
+    loadIframe(slides[n]);
+    // replaceState, not location.hash: one entry per slide would otherwise
+    // fill the browser's back history for the whole talk.
+    i=n; history.replaceState(null,'','#'+(n+1));
+    bar.style.width=((n+1)/slides.length*100)+'%';
+    count.textContent=(n+1)+' / '+slides.length;
+  }
+  function next(){
+    const f=frags(slides[i]).filter(el=>!el.classList.contains('show'));
+    if(f.length){f[0].classList.add('show');return}
+    if(i<slides.length-1)show(i+1,false);
+  }
+  function prev(){
+    const f=frags(slides[i]).filter(el=>el.classList.contains('show'));
+    if(f.length){f[f.length-1].classList.remove('show');return}
+    if(i>0)show(i-1,true);
+  }
+  window.deckNext=next; window.deckPrev=prev;
+  document.querySelectorAll('.iframe-slide').forEach(s=>{
+    const nb=document.createElement('div'); nb.className='navbtns';
+    const b1=document.createElement('button'); b1.textContent='‹'; b1.onclick=e=>{e.stopPropagation();prev()};
+    const b2=document.createElement('button'); b2.textContent='›'; b2.onclick=e=>{e.stopPropagation();next()};
+    nb.append(b1,b2); s.appendChild(nb);
+  });
+  addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();next()}
+    else if(e.key==='ArrowLeft'||e.key==='Backspace'||e.key==='PageUp'){e.preventDefault();prev()}
+    else if(e.key==='Home')show(0,false);
+    else if(e.key==='End')show(slides.length-1,true);
+    else if(e.key==='f'||e.key==='F'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}
+    else if(e.key==='g'||e.key==='G'){deck.classList.toggle('overview')}
+  });
+  deck.addEventListener('click',e=>{
+    if(deck.classList.contains('overview')){
+      const s=e.target.closest('.slide');
+      if(s){deck.classList.remove('overview');show(slides.indexOf(s),false)}
+      return;
+    }
+    if(e.target.closest('a'))return;
+    if(e.target.closest('.iframe-slide'))return;
+    (e.clientX>innerWidth*.35)?next():prev();
+  });
+  addEventListener('hashchange',()=>{
+    const n=(parseInt(location.hash.slice(1),10)||1)-1;
+    if(n!==i&&n>=0&&n<slides.length)show(n,false);
+  });
+  show(i,false);
+})();
+</script>
+</body>
+</html>
